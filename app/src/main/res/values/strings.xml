@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FindNearest</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="places_array">
+        <item>ATM</item>
+        <item>Petrol Pump</item>
+        <item>Hospital</item>
+        <item>Restaurant</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+</resources>
