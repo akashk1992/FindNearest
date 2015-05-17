@@ -49,7 +49,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                Log.d("test", "closed tit: " + mActivityTitle);
+                Log.d("test", "open tit: " + mActivityTitle);
                 actionBar.setTitle("Places");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
