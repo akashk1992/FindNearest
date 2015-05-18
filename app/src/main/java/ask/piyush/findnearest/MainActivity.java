@@ -1,5 +1,7 @@
 package ask.piyush.findnearest;
 
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -22,15 +24,24 @@ public class MainActivity extends ActionBarActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private android.support.v7.app.ActionBar actionBar;
     private ListView listView;
+    public static android.support.v4.app.FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setUpNavigationDrawer();
+        fragmentManager = getSupportFragmentManager();
+        MapFragment newFragment = new MapFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.commit();
+    }
 
+    private void setUpNavigationDrawer() {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
-        actionBar = this.getSupportActionBar();
+        actionBar = getSupportActionBar();
         listView = (ListView) findViewById(R.id.nav_drawer_list);
         String[] mNavTitle = getResources().getStringArray(R.array.places_array);
         ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mNavTitle);
