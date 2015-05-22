@@ -1,6 +1,5 @@
 package ask.piyush.findnearest;
 
-import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -11,20 +10,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
     private GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private android.support.v7.app.ActionBar actionBar;
-    private ListView listView;
+    private ListView mDrawerList;
     public static android.support.v4.app.FragmentManager fragmentManager;
+    private String[] mNavTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +43,11 @@ public class MainActivity extends ActionBarActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
         actionBar = getSupportActionBar();
-        listView = (ListView) findViewById(R.id.nav_drawer_list);
-        String[] mNavTitle = getResources().getStringArray(R.array.places_array);
+        mDrawerList = (ListView) findViewById(R.id.nav_drawer_list);
+        mNavTitle = getResources().getStringArray(R.array.places_array);
         ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mNavTitle);
-        listView.setAdapter(adapter);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(this);
         setUpDrawerToggle();
     }
 
@@ -78,13 +80,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    public void setTitle(CharSequence title) {
-        mActivityTitle = (String) title;
-        Log.d("test", "tit: " + mActivityTitle);
-        actionBar.setTitle(mActivityTitle);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -94,7 +89,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
-        boolean drawerOpen = drawerLayout.isDrawerOpen(listView);
+        boolean drawerOpen = drawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -125,5 +120,21 @@ public class MainActivity extends ActionBarActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+// 1) select item
+// 2) update title(call @overriden setTitle() method)
+// 3) close Drawer
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mNavTitle[position]);
+        drawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        mActivityTitle = (String) title;
+        actionBar.setTitle(mActivityTitle);
     }
 }
