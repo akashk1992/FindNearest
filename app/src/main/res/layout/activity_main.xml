@@ -7,14 +7,7 @@
     <FrameLayout
         android:layout_width="200dp"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_container">
-        <!--
-                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/map"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:name="com.google.android.gms.maps.SupportMapFragment" />-->
-    </FrameLayout>
+        android:id="@+id/fragment_container"></FrameLayout>
 
     <ListView
         android:layout_width="200dp"
@@ -23,6 +16,7 @@
         android:layout_gravity="start"
         android:choiceMode="singleChoice"
         android:dividerHeight="1dp"
-        android:background="@android:color/darker_gray"
+        android:divider="@android:color/black"
+        android:background="@android:color/white"
         android:scrollbars="none" />
 </android.support.v4.widget.DrawerLayout>

@@ -33,9 +33,7 @@ public class MapFragment extends Fragment {
         // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Map
         latitude = 26.78;
         longitude = 72.56;
-
         setUpMapIfNeeded(); // For setting up the MapFragment
-
         return view;
     }
 

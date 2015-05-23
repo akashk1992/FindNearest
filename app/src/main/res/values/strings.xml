@@ -9,6 +9,12 @@
         <item>Hospital</item>
         <item>Restaurant</item>
     </string-array>
+    <integer-array name="nav_drawer_icons">
+        <item>@drawable/ic_atm</item>
+        <item>@drawable/petrol</item>
+        <item>@drawable/hosital</item>
+        <item>@drawable/ic_restaurant</item>
+    </integer-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 </resources>

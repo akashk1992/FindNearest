@@ -1,18 +1,24 @@
 package ask.piyush.findnearest;
 
+import android.annotation.SuppressLint;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -26,17 +32,23 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private ListView mDrawerList;
     public static android.support.v4.app.FragmentManager fragmentManager;
     private String[] mNavTitle;
+    public Context context;
+    private int[] mNavIcons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = getApplicationContext();
         setUpNavigationDrawer();
+        /***********************/
         fragmentManager = getSupportFragmentManager();
+        //call initial map fragment
         MapFragment newFragment = new MapFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.commit();
+        /************************/
     }
 
     private void setUpNavigationDrawer() {
@@ -45,8 +57,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         actionBar = getSupportActionBar();
         mDrawerList = (ListView) findViewById(R.id.nav_drawer_list);
         mNavTitle = getResources().getStringArray(R.array.places_array);
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mNavTitle);
-        mDrawerList.setAdapter(adapter);
+//        mNavIcons = getResources().getIntArray(R.array.nav_drawer_icons);
+        mNavIcons = new int[]{R.drawable.ic_atm, R.drawable.petrol, R.drawable.hosital, R.drawable.ic_restaurant};
+        //ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mNavTitle);
+        //custome drawer list
+        CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
+        mDrawerList.setAdapter(customeDrawerListAdapter);
         mDrawerList.setOnItemClickListener(this);
         setUpDrawerToggle();
     }
@@ -136,5 +152,43 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public void setTitle(CharSequence title) {
         mActivityTitle = (String) title;
         actionBar.setTitle(mActivityTitle);
+    }
+
+    private class CustomeDrawerListAdapter extends BaseAdapter {
+
+        private final String[] mTitles;
+        private final int[] mIcons;
+
+        public CustomeDrawerListAdapter(String[] mNavTitle, int[] mNavIcons) {
+            this.mTitles = mNavTitle;
+            this.mIcons = mNavIcons;
+        }
+
+        @Override
+        public int getCount() {
+            return mNavTitle.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mNavTitle[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @SuppressLint("NewApi")
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            View rootView = inflater.inflate(R.layout.drawer_list_item, parent, false);
+            TextView listText = (TextView) rootView.findViewById(R.id.drawer_list_text);
+            ImageView listIcon = (ImageView) rootView.findViewById(R.id.drawer_list_icon);
+            listIcon.setBackground(getResources().getDrawable(mIcons[position]));
+            listText.setText(mTitles[position]);
+            return rootView;
+        }
     }
 }
