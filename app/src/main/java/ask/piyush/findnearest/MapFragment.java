@@ -1,6 +1,8 @@
 package ask.piyush.findnearest;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -17,11 +19,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by PIYUSH on 5/16/2015.
  */
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements GoogleMap.OnMyLocationButtonClickListener {
     private View view;
     private double latitude;
     private double longitude;
     private GoogleMap mMap;
+    private LocationManager locationManager;
 
     @Nullable
     @Override
@@ -29,6 +32,7 @@ public class MapFragment extends Fragment {
         if (container == null) {
             return null;
         }
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         view = (RelativeLayout) inflater.inflate(R.layout.map_fragment, container, false);
         // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Map
         latitude = 26.78;
@@ -42,14 +46,15 @@ public class MapFragment extends Fragment {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) MainActivity.fragmentManager.findFragmentById(R.id.mapFragment)).getMap();
             // Check if we were successful in obtaining the map.
-            if (mMap != null)
+            if (mMap != null) {
+                // For showing a move to my loction button
+                mMap.setMyLocationEnabled(true);
                 setUpMap();
+            }
         }
     }
 
     private void setUpMap() {
-        // For showing a move to my loction button
-        mMap.setMyLocationEnabled(true);
         // For dropping a marker at a point on the Map
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("My Home").snippet("Home Address"));
         // For zooming automatically to the Dropped PIN Location
@@ -66,8 +71,11 @@ public class MapFragment extends Fragment {
             mMap = ((SupportMapFragment) MainActivity.fragmentManager
                     .findFragmentById(R.id.mapFragment)).getMap(); // getMap is deprecated
             // Check if we were successful in obtaining the map.
-            if (mMap != null)
+            if (mMap != null) {
+                // For showing a move to my loction button
+                mMap.setMyLocationEnabled(true);
                 setUpMap();
+            }
         }
     }
 
@@ -79,5 +87,10 @@ public class MapFragment extends Fragment {
                     .remove(MainActivity.fragmentManager.findFragmentById(R.id.mapFragment)).commit();
             mMap = null;
         }
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return true;
     }
 }
