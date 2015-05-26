@@ -17,4 +17,6 @@
     </integer-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="gps_prompt_msg">Please Turn On Location Services or GPS\nClick OK to go to location settings.</string>
+    <string name="internet_prompt_msg">Please make sure that network is available!\nPress OK to go to settings.</string>
 </resources>
