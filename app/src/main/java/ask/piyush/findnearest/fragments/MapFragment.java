@@ -98,4 +98,10 @@ public class MapFragment extends Fragment implements GoogleMap.OnMyLocationButto
     public boolean onMyLocationButtonClick() {
         return true;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
+    }
 }

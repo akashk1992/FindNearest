@@ -26,8 +26,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.R;
+import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.utils.PromptUser;
 
 
@@ -42,6 +42,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private String[] mNavTitle;
     public Context context;
     private int[] mNavIcons;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,25 +51,45 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         context = getApplicationContext();
         setUpNavigationDrawer();
         /********check GPS Status*************/
-        LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        checkStatusAndCallMaps();
+    }
+
+    private void checkStatusAndCallMaps() {
         if (isNetworkAvailable()) {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 PromptUser.displayPromptMessage(this, context.getString(R.string.gps_prompt_msg));
             } else {
-                /***********************/
-                fragmentManager = getSupportFragmentManager();
-                //call initial map fragment
-                MapFragment newFragment = new MapFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, newFragment);
-                transaction.commit();
-                /************************/
+                callMapFragment();
             }
         } else {
             //if Network not available prompt user
             PromptUser.displayPromptMessage(this, context.getString(R.string.internet_prompt_msg));
         }
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        checkStatusAndCallMaps();
+    }
+
+    private void callMapFragment() {
+        fragmentManager = getSupportFragmentManager();
+        //call initial map fragment
+        MapFragment newFragment = new MapFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.commit();
+    }
+
+/*
+    @Override
+    protected void onResume() {
+        super.onResume();
+        callMapFragment();
+    }
+*/
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
