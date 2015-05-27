@@ -1,4 +1,4 @@
-package ask.piyush.findnearest;
+package ask.piyush.findnearest.utils;
 
 import android.app.Application;
 import android.content.Context;

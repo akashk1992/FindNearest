@@ -19,7 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.activity.MainActivity;
 
-import static ask.piyush.findnearest.FindNearestApp.getContext;
+import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
 /**
  * Created by PIYUSH on 5/16/2015.
