@@ -19,6 +19,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.activity.MainActivity;
 
+import static ask.piyush.findnearest.FindNearestApp.getContext;
+
 /**
  * Created by PIYUSH on 5/16/2015.
  */
@@ -35,7 +37,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMyLocationButto
         if (container == null) {
             return null;
         }
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         view = (RelativeLayout) inflater.inflate(R.layout.map_fragment, container, false);
         // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Map
         latitude = 26.78;

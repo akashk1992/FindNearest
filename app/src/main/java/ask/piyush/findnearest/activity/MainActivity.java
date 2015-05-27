@@ -104,7 +104,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         mDrawerList = (ListView) findViewById(R.id.nav_drawer_list);
         mNavTitle = getResources().getStringArray(R.array.places_array);
 //        mNavIcons = getResources().getIntArray(R.array.nav_drawer_icons);
-        mNavIcons = new int[]{R.drawable.ic_atm, R.drawable.petrol, R.drawable.hosital, R.drawable.ic_restaurant};
+        mNavIcons = new int[]{
+                R.drawable.atm55,
+                R.drawable.petrol55,
+                R.drawable.hosital55,
+                R.drawable.restaurants55};
         //custome drawer list
         CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
         mDrawerList.setAdapter(customeDrawerListAdapter);
