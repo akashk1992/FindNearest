@@ -9,14 +9,9 @@
         <item>Hospital</item>
         <item>Restaurant</item>
     </string-array>
-    <integer-array name="nav_drawer_icons">
-        <item>@drawable/ic_atm</item>
-        <item>@drawable/petrol</item>
-        <item>@drawable/hosital</item>
-        <item>@drawable/ic_restaurant</item>
-    </integer-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="gps_prompt_msg">Please Turn On Location Services or GPS\nClick OK to go to location settings.</string>
     <string name="internet_prompt_msg">Please make sure that network is available!\nPress OK to go to settings.</string>
+    <string name="me">Me</string>
 </resources>

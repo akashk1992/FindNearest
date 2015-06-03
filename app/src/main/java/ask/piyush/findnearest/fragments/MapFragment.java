@@ -12,7 +12,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -20,6 +19,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -42,14 +42,12 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //get current location..
-        if (checkPlayServices()) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-            mGoogleApiClient.connect();
-        }
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
     }
 
     @Nullable
@@ -66,27 +64,13 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
         return view;
     }
 
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getContext());
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(), 1000).show();
-            } else {
-                Toast.makeText(getContext(), "This device is not supported.", Toast.LENGTH_LONG)
-                        .show();
-            }
-            return false;
-        }
-        return true;
-    }
-
     private void setUpMapIfNeeded() {
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) MainActivity.fragmentManager.findFragmentById(R.id.mapFragment)).getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                // For showing a move to my loction button
+                // For displaying a move to my location button
                 mMap.setMyLocationEnabled(true);
                 setUpMap();
             }
@@ -94,9 +78,11 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
     }
 
     private void setUpMap() {
+        //you can call this method whenever you have new lat long
         // For dropping a marker at a point on the Map
         Log.d("test", "set up map called" + latitude + " -- " + longitude);
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("My Home").snippet("Home Address"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(getActivity().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+//        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Me").snippet("Home Address"));
         // For zooming automatically to the Dropped PIN Location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
     }
