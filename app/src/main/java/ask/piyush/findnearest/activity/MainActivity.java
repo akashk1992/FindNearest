@@ -24,15 +24,19 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.utils.PromptUser;
 
+import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
-    private GoogleApiClient mGoogleApiClient;
+
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    public static GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -49,6 +53,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
         setUpNavigationDrawer();
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
@@ -83,14 +92,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         transaction.commit();
     }
 
-/*
-    @Override
-    protected void onResume() {
-        super.onResume();
-        callMapFragment();
-    }
-*/
-
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -108,7 +109,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 R.drawable.atm55,
                 R.drawable.petrol55,
                 R.drawable.hosital55,
-                R.drawable.restaurants55};
+                R.drawable.ic_launcher};
         //custome drawer list
         CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
         mDrawerList.setAdapter(customeDrawerListAdapter);
@@ -201,6 +202,21 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public void setTitle(CharSequence title) {
         mActivityTitle = (String) title;
         actionBar.setTitle(mActivityTitle);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     private class CustomeDrawerListAdapter extends BaseAdapter {
