@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,19 +26,35 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONObject;
 
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.utils.PromptUser;
+import ask.piyush.findnearest.utils.VolleySingleton;
 
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
@@ -49,22 +66,21 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public Context context;
     private int[] mNavIcons;
     private LocationManager locationManager;
+    private GoogleMap mMap;
+    private double latitude;
+    private double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
         setUpNavigationDrawer();
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-        if (checkPlayServices())
+        if (checkPlayServices()) {
             checkStatusAndCallMaps();
+        }
     }
 
     private boolean checkPlayServices() {
@@ -98,6 +114,22 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     protected void onRestart() {
         super.onRestart();
         checkStatusAndCallMaps();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+
+        }
+        super.onStop();
     }
 
     private void callMapFragment() {
@@ -196,6 +228,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(LocationServices.API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, 0, this)
+                .build();
+        mGoogleApiClient.connect();
+        setUpMapIfNeeded();
         mDrawerToggle.syncState();
     }
 
@@ -210,10 +252,64 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 // 1) select item
 // 2) update title(call @overriden setTitle() method)
 // 3) close Drawer
+        TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
+        String selectedDrawerItem = drawerListText.getText().toString();
+        String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase());
+        webserviceapiCall(placesWebServiceUrl);
+        Log.d("test", "selected drawer item: " + selectedDrawerItem.trim().toLowerCase());
         mDrawerList.setItemChecked(position, true);
         setTitle(mNavTitle[position]);
         drawerLayout.closeDrawer(mDrawerList);
     }
+
+    private String buildGooglePlaceUrl(String selectedDrawerItem) {
+        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=17.4353663,78.3920193");
+        googlePlacesUrl.append("&radius=" + 1000);
+        googlePlacesUrl.append("&types=" + selectedDrawerItem);
+        googlePlacesUrl.append("&key=" + getString(R.string.maps_web_service_api));
+        googlePlacesUrl.append("&sensor=true");
+        return "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
+//        return googlePlacesUrl.toString();
+    }
+
+    private void webserviceapiCall(String placesWebServiceUrl) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                placesWebServiceUrl, "",
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("test", "places: " + response + "");
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // hide the progress dialog
+                Toast.makeText(getContext(), "Something Went Wrong..!", Toast.LENGTH_LONG).show();
+            }
+        });
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+   /* public void webServiceCallForPlaces() {
+        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                .getCurrentPlace(mGoogleApiClient, null);
+        Log.d("test", "result: " + result);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+                Log.d("test", "onResult callback.." + likelyPlaces);
+                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                    Log.d("test", "place name: " + placeLikelihood.getPlace().getName());
+                    Log.d("test", "likelihood rate: " + placeLikelihood.getLikelihood());
+                }
+                likelyPlaces.release();
+            }
+        });
+    }*/
 
     @Override
     public void setTitle(CharSequence title) {
@@ -223,7 +319,61 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     @Override
     public void onConnected(Bundle bundle) {
+        displayLocation();
+        startLocationUpdates();
+    }
 
+    private void displayLocation() {
+        Location mLastLocation = LocationServices.FusedLocationApi
+                .getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            latitude = mLastLocation.getLatitude();
+            longitude = mLastLocation.getLongitude();
+            Log.d("test", "lat: " + latitude + "--" + longitude);
+        } else Log.d("test", "couldn't get location ...");
+    }
+
+    private void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, createLocationRequest(), this);
+    }
+
+    protected LocationRequest createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return mLocationRequest;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        Log.d("test", "onLocation changed" + latitude + " " + longitude);
+        setUpMap();
+    }
+
+    private void setUpMapIfNeeded() {
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            mMap = ((SupportMapFragment) MainActivity.fragmentManager.findFragmentById(R.id.mapFragment)).getMap();
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+                // For displaying a move to my location button
+                mMap.setMyLocationEnabled(true);
+                setUpMap();
+            }
+        }
+    }
+
+    private void setUpMap() {
+        //you can call this method whenever you have new lat long
+        // For dropping a marker at a point on the Map
+        Log.d("test", "set up map called" + latitude + " -- " + longitude);
+        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+//        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Me").snippet("Home Address"));
+        // For zooming automatically to the Dropped PIN Location
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
     }
 
     @Override
@@ -233,6 +383,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("test", "" + connectionResult);
 
     }
 
