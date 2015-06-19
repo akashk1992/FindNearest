@@ -16,4 +16,5 @@
     <string name="internet_prompt_msg">Please make sure that network is available!\nPress OK to go to settings.</string>
     <string name="me">Me</string>
     <string name="maps_web_service_api">AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk</string>
+    <string name="web_service_url">https://maps.googleapis.com/maps/api/place/nearbysearch/json?</string>
 </resources>

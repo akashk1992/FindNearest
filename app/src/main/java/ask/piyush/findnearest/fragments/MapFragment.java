@@ -18,11 +18,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.activity.MainActivity;
+import ask.piyush.findnearest.helper.PlacesResponseHandler;
 
 /**
  * Created by PIYUSH on 5/16/2015.
  */
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements PlacesResponseHandler {
     private View view;
     private double latitude;
     private double longitude;
@@ -78,4 +79,8 @@ public class MapFragment extends Fragment {
         setUpMapIfNeeded();
     }
 
+    @Override
+    public void getPlaces() {
+
+    }
 }

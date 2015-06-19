@@ -43,11 +43,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
 
 import org.json.JSONObject;
 
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.fragments.MapFragment;
+import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.utils.PromptUser;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
@@ -69,6 +71,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private GoogleMap mMap;
     private double latitude;
     private double longitude;
+    // Declare a variable for the cluster manager.
+    ClusterManager<MyItem> mClusterManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,7 +260,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
         String selectedDrawerItem = drawerListText.getText().toString();
         String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase());
-        webserviceapiCall(placesWebServiceUrl);
+        webServiceapiCall(placesWebServiceUrl);
         Log.d("test", "selected drawer item: " + selectedDrawerItem.trim().toLowerCase());
         mDrawerList.setItemChecked(position, true);
         setTitle(mNavTitle[position]);
@@ -263,17 +268,35 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private String buildGooglePlaceUrl(String selectedDrawerItem) {
-        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlacesUrl.append("location=17.4353663,78.3920193");
-        googlePlacesUrl.append("&radius=" + 1000);
-        googlePlacesUrl.append("&types=" + selectedDrawerItem);
-        googlePlacesUrl.append("&key=" + getString(R.string.maps_web_service_api));
-        googlePlacesUrl.append("&sensor=true");
-        return "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
-//        return googlePlacesUrl.toString();
+        return getString(R.string.web_service_url) + "location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
     }
 
-    private void webserviceapiCall(String placesWebServiceUrl) {
+    private void setUpClusterer() {
+        // Position the map.
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraChangeListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+        // Add cluster items (markers) to the cluster manager.
+        addItems();
+    }
+
+    private void addItems() {
+        // Set some lat/lng coordinates to start with.
+        double lat = 51.5145160;
+        double lng = -0.1270060;
+        // Add ten cluster items in close proximity, for purposes of this example.
+        for (int i = 0; i < 10; i++) {
+            MyItem offsetItem = new MyItem(lat, lng);
+            mClusterManager.addItem(offsetItem);
+        }
+    }
+
+    private void webServiceapiCall(String placesWebServiceUrl) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 placesWebServiceUrl, "",
                 new Response.Listener<JSONObject>() {
@@ -283,14 +306,15 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         Log.d("test", "places: " + response + "");
 
                     }
-                }, new Response.ErrorListener() {
+                },
+                new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // hide the progress dialog
-                Toast.makeText(getContext(), "Something Went Wrong..!", Toast.LENGTH_LONG).show();
-            }
-        });
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // hide the progress dialog
+                        Toast.makeText(getContext(), "Something Went Wrong..!", Toast.LENGTH_LONG).show();
+                    }
+                });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
     }
 
@@ -370,7 +394,10 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         //you can call this method whenever you have new lat long
         // For dropping a marker at a point on the Map
         Log.d("test", "set up map called" + latitude + " -- " + longitude);
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+        MarkerOptions options = new MarkerOptions();
+        mMap.addMarker(options.position(new LatLng(17.654160, 78.322067)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+//        mMap.addMarker(options.position(new LatLng(latitude, longitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+        mMap.addMarker(options.position(new LatLng(17.654789, 78.321654)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
 //        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Me").snippet("Home Address"));
         // For zooming automatically to the Dropped PIN Location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
