@@ -50,6 +50,7 @@ import org.json.JSONObject;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.helper.MyItem;
+import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.utils.PromptUser;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
@@ -304,7 +305,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("test", "places: " + response + "");
-
+                        PojoMapping mapping = new PojoMapping();
+                        ask.piyush.findnearest.model.Response jsonResponse = mapping.getPlacesResponse(response.toString());
+                        Log.d("response", "" + jsonResponse.getResults().get(0).getName());
+                        Log.d("response", "" + jsonResponse.getResults().get(1).getName());
+                        Log.d("response", "" + jsonResponse.getResults().get(2).getName());
                     }
                 },
                 new Response.ErrorListener() {

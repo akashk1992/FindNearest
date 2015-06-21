@@ -4,24 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Response {
-    private List<Object> htmlAttributions = new ArrayList<Object>();
     private List<Result> results = new ArrayList<Result>();
     private String nextPageToken;
     private String status;
-
-    /**
-     * @return The htmlAttributions
-     */
-    public List<Object> getHtmlAttributions() {
-        return htmlAttributions;
-    }
-
-    /**
-     * @param htmlAttributions The html_attributions
-     */
-    public void setHtmlAttributions(List<Object> htmlAttributions) {
-        this.htmlAttributions = htmlAttributions;
-    }
 
     /**
      * @return The nextPageToken
