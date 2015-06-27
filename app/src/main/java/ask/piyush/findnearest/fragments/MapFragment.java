@@ -3,7 +3,6 @@ package ask.piyush.findnearest.fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -61,7 +61,6 @@ public class MapFragment extends Fragment implements PlacesResponseHandler {
     private void setUpMap() {
         //you can call this method whenever you have new lat long
         // For dropping a marker at a point on the Map
-        Log.d("test", "set up map called" + latitude + " -- " + longitude);
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(getActivity().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
 //        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Me").snippet("Home Address"));
         // For zooming automatically to the Dropped PIN Location

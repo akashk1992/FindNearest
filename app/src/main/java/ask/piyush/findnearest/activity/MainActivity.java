@@ -37,18 +37,19 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.fragments.MapFragment;
+import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.utils.PromptUser;
@@ -183,7 +184,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                Log.d("test", "open tit: " + mActivityTitle);
                 actionBar.setTitle("Places");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
@@ -191,7 +191,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                Log.d("test", "closed tit: " + mActivityTitle);
                 actionBar.setTitle(mActivityTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
@@ -211,7 +210,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = drawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        menu.findItem(R.id.cluster).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -225,7 +224,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        if (id == R.id.action_settings) {
+        if (id == R.id.cluster) {
+            setUpClusterer();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -262,7 +262,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         String selectedDrawerItem = drawerListText.getText().toString();
         String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase());
         webServiceapiCall(placesWebServiceUrl);
-        Log.d("test", "selected drawer item: " + selectedDrawerItem.trim().toLowerCase());
         mDrawerList.setItemChecked(position, true);
         setTitle(mNavTitle[position]);
         drawerLayout.closeDrawer(mDrawerList);
@@ -273,28 +272,26 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private void setUpClusterer() {
-        // Position the map.
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(17.1234576, 78.1234570), 12.0f));
+//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(17.1234576, 78.1234570), 12.0f));
+        // Add cluster items (markers) to the cluster manager.
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
+        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(),mMap,mClusterManager));
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
-        // Add cluster items (markers) to the cluster manager.
         addItems();
     }
 
     private void addItems() {
-        // Set some lat/lng coordinates to start with.
-        double lat = 51.5145160;
-        double lng = -0.1270060;
-        // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 10; i++) {
-            MyItem offsetItem = new MyItem(lat, lng);
-            mClusterManager.addItem(offsetItem);
-        }
+//        double lat = 51.5145160;
+//        double lng = -0.1270060;
+        List list = new ArrayList();
+        list.add(new MyItem(16.1234576, 78.1234570, R.drawable.reddot));
+        list.add(new MyItem(15.1234575, 78.1234572, R.drawable.reddot));
+        list.add(new MyItem(14.1234572, 78.1234575, R.drawable.reddot));
+        list.add(new MyItem(13.1234571, 78.1234577, R.drawable.reddot));
+        mClusterManager.addItems(list);
+        mClusterManager.cluster();
     }
 
     private void webServiceapiCall(String placesWebServiceUrl) {
@@ -308,8 +305,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.Response jsonResponse = mapping.getPlacesResponse(response.toString());
                         Log.d("response", "" + jsonResponse.getResults().get(0).getName());
-                        Log.d("response", "" + jsonResponse.getResults().get(1).getName());
-                        Log.d("response", "" + jsonResponse.getResults().get(2).getName());
                     }
                 },
                 new Response.ErrorListener() {
@@ -322,23 +317,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
     }
-
-   /* public void webServiceCallForPlaces() {
-        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                .getCurrentPlace(mGoogleApiClient, null);
-        Log.d("test", "result: " + result);
-        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-            @Override
-            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                Log.d("test", "onResult callback.." + likelyPlaces);
-                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                    Log.d("test", "place name: " + placeLikelihood.getPlace().getName());
-                    Log.d("test", "likelihood rate: " + placeLikelihood.getLikelihood());
-                }
-                likelyPlaces.release();
-            }
-        });
-    }*/
 
     @Override
     public void setTitle(CharSequence title) {
@@ -358,8 +336,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (mLastLocation != null) {
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
-            Log.d("test", "lat: " + latitude + "--" + longitude);
-        } else Log.d("test", "couldn't get location ...");
+        } else Toast.makeText(getContext(), "Couldn't get location..!", Toast.LENGTH_LONG).show();
     }
 
     private void startLocationUpdates() {
@@ -378,7 +355,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public void onLocationChanged(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        Log.d("test", "onLocation changed" + latitude + " " + longitude);
         setUpMap();
     }
 
@@ -390,6 +366,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             if (mMap != null) {
                 // For displaying a move to my location button
                 mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setZoomControlsEnabled(true);
                 setUpMap();
             }
         }
@@ -398,14 +375,13 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private void setUpMap() {
         //you can call this method whenever you have new lat long
         // For dropping a marker at a point on the Map
-        Log.d("test", "set up map called" + latitude + " -- " + longitude);
         MarkerOptions options = new MarkerOptions();
-        mMap.addMarker(options.position(new LatLng(17.654160, 78.322067)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+//        mMap.addMarker(options.position(new LatLng(17.654160, 78.322067)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
 //        mMap.addMarker(options.position(new LatLng(latitude, longitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-        mMap.addMarker(options.position(new LatLng(17.654789, 78.321654)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+//        mMap.addMarker(options.position(new LatLng(17.654789, 78.321654)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
 //        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Me").snippet("Home Address"));
         // For zooming automatically to the Dropped PIN Location
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
+//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
     }
 
     @Override
@@ -416,7 +392,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("test", "" + connectionResult);
-
     }
 
     private class CustomeDrawerListAdapter extends BaseAdapter {
