@@ -43,6 +43,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
 import org.json.JSONObject;
@@ -79,6 +81,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private double currentLongitude;
     // Declare a variable for the cluster manager.
     ClusterManager<MyItem> mClusterManager;
+    List<Polyline> polylineList = new ArrayList<>();
 
 
     @Override
@@ -307,16 +310,23 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
                     @Override
                     public void onResponse(JSONObject response) {
+                        double lat;
+                        double lng;
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.Response jsonResponse = mapping.getPlacesResponse(response.toString());
                         List<Result> placesResponse = jsonResponse.getResults();
                         List<MyItem> items = new ArrayList();
-                        if (!placesResponse.isEmpty() || !(placesResponse == null)) {
+                        List<LatLng> latLngs = new ArrayList<>();
+                        if (!(placesResponse.size() == 0)) {
                             for (int i = 0; i < placesResponse.size(); i++) {
-                                items.add(new MyItem(placesResponse.get(i).getGeometry().getLocation().getLat(), placesResponse.get(i).getGeometry().getLocation().getLng(), R.drawable.reddot));
+                                lat = placesResponse.get(i).getGeometry().getLocation().getLat();
+                                lng = placesResponse.get(i).getGeometry().getLocation().getLng();
+                                latLngs.add(new LatLng(lat, lng));
+                                items.add(new MyItem(lat, lng, R.drawable.reddot));
                             }
                             addPlacesToCluster(items);
+                            createPolylinesToClusters(latLngs);
                         } else {
                             Toast.makeText(context, "Sorry No Results Found..!", Toast.LENGTH_LONG).show();
                         }
@@ -331,6 +341,22 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     }
                 });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void createPolylinesToClusters(List<LatLng> latLngs) {
+        Polyline polyline;
+        if (polylineList != null) {
+            for (Polyline polyline1 : polylineList)
+                polyline1.remove();
+        }
+        for (LatLng latLng : latLngs) {
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .add(latLng)
+                    .add(new LatLng(currentLatitude, currentLongitude));
+            polyline = mMap.addPolyline(polylineOptions);
+            polyline.setGeodesic(true);
+            polylineList.add(polyline);
+        }
     }
 
     private void addPlacesToCluster(List<MyItem> list) {
