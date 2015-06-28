@@ -37,8 +37,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -52,6 +55,7 @@ import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
+import ask.piyush.findnearest.model.Result;
 import ask.piyush.findnearest.utils.PromptUser;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
@@ -71,8 +75,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private int[] mNavIcons;
     private LocationManager locationManager;
     private GoogleMap mMap;
-    private double latitude;
-    private double longitude;
+    private double currentLatitude;
+    private double currentLongitude;
     // Declare a variable for the cluster manager.
     ClusterManager<MyItem> mClusterManager;
 
@@ -86,6 +90,15 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         if (checkPlayServices()) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Places.GEO_DATA_API)
+                    .addApi(LocationServices.API)
+                    .addApi(Places.PLACE_DETECTION_API)
+                    .enableAutoManage(this, 0, this)
+                    .build();
+            mGoogleApiClient.connect();
             checkStatusAndCallMaps();
         }
     }
@@ -109,7 +122,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 PromptUser.displayPromptMessage(this, context.getString(R.string.gps_prompt_msg));
             } else {
-                callMapFragment();
+                setUpMapIfNeeded();
+//                callMapFragment();
             }
         } else {
             //if Network not available prompt user
@@ -210,7 +224,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = drawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.cluster).setVisible(!drawerOpen);
+        menu.findItem(R.id.setting_string).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -224,8 +238,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        if (id == R.id.cluster) {
-            setUpClusterer();
+        if (id == R.id.setting_string) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -234,7 +247,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        /*mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Places.GEO_DATA_API)
@@ -242,7 +255,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, 0, this)
                 .build();
-        mGoogleApiClient.connect();
+        mGoogleApiClient.connect();*/
         setUpMapIfNeeded();
         mDrawerToggle.syncState();
     }
@@ -261,6 +274,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
         String selectedDrawerItem = drawerListText.getText().toString();
         String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase());
+        Log.d("test", "websrvc: " + placesWebServiceUrl);
         webServiceapiCall(placesWebServiceUrl);
         mDrawerList.setItemChecked(position, true);
         setTitle(mNavTitle[position]);
@@ -268,7 +282,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private String buildGooglePlaceUrl(String selectedDrawerItem) {
-        return getString(R.string.web_service_url) + "location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
+//        return getString(R.string.web_service_url) + "location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
+        return getString(R.string.web_service_url) +
+                "location=" + currentLatitude + "," + currentLongitude +
+                "&radius=1000&types=" + selectedDrawerItem +
+                "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
     }
 
     private void setUpClusterer() {
@@ -276,22 +294,10 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 //        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(17.1234576, 78.1234570), 12.0f));
         // Add cluster items (markers) to the cluster manager.
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
-        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(),mMap,mClusterManager));
+        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager));
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
-        addItems();
-    }
-
-    private void addItems() {
-//        double lat = 51.5145160;
-//        double lng = -0.1270060;
-        List list = new ArrayList();
-        list.add(new MyItem(16.1234576, 78.1234570, R.drawable.reddot));
-        list.add(new MyItem(15.1234575, 78.1234572, R.drawable.reddot));
-        list.add(new MyItem(14.1234572, 78.1234575, R.drawable.reddot));
-        list.add(new MyItem(13.1234571, 78.1234577, R.drawable.reddot));
-        mClusterManager.addItems(list);
-        mClusterManager.cluster();
+//        addPlacesToCluster();
     }
 
     private void webServiceapiCall(String placesWebServiceUrl) {
@@ -304,7 +310,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.Response jsonResponse = mapping.getPlacesResponse(response.toString());
-                        Log.d("response", "" + jsonResponse.getResults().get(0).getName());
+                        List<Result> placesResponse = jsonResponse.getResults();
+                        List<MyItem> items = new ArrayList();
+                        if (!placesResponse.isEmpty() || !(placesResponse == null)) {
+                            for (int i = 0; i < placesResponse.size(); i++) {
+                                items.add(new MyItem(placesResponse.get(i).getGeometry().getLocation().getLat(), placesResponse.get(i).getGeometry().getLocation().getLng(), R.drawable.reddot));
+                            }
+                            addPlacesToCluster(items);
+                        } else {
+                            Toast.makeText(context, "Sorry No Results Found..!", Toast.LENGTH_LONG).show();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -316,6 +331,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     }
                 });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void addPlacesToCluster(List<MyItem> list) {
+        mClusterManager.clearItems();
+        mClusterManager.addItems(list);
+        mClusterManager.cluster();
     }
 
     @Override
@@ -334,8 +355,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         Location mLastLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
-            latitude = mLastLocation.getLatitude();
-            longitude = mLastLocation.getLongitude();
+            currentLatitude = mLastLocation.getLatitude();
+            currentLongitude = mLastLocation.getLongitude();
         } else Toast.makeText(getContext(), "Couldn't get location..!", Toast.LENGTH_LONG).show();
     }
 
@@ -353,20 +374,23 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     @Override
     public void onLocationChanged(Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
+        currentLatitude = location.getLatitude();
+        currentLongitude = location.getLongitude();
         setUpMap();
     }
 
     private void setUpMapIfNeeded() {
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
+            fragmentManager = getSupportFragmentManager();
             mMap = ((SupportMapFragment) MainActivity.fragmentManager.findFragmentById(R.id.mapFragment)).getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 // For displaying a move to my location button
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setZoomControlsEnabled(true);
+                mMap.getUiSettings().setZoomGesturesEnabled(true);
+                setUpClusterer();
                 setUpMap();
             }
         }
@@ -375,13 +399,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private void setUpMap() {
         //you can call this method whenever you have new lat long
         // For dropping a marker at a point on the Map
-        MarkerOptions options = new MarkerOptions();
-//        mMap.addMarker(options.position(new LatLng(17.654160, 78.322067)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-//        mMap.addMarker(options.position(new LatLng(latitude, longitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-//        mMap.addMarker(options.position(new LatLng(17.654789, 78.321654)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-//        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Me").snippet("Home Address"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
         // For zooming automatically to the Dropped PIN Location
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 12.0f));
     }
 
     @Override

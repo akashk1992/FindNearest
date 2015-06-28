@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
     <item
-        android:id="@+id/cluster"
-        android:title="Clusters"
+        android:id="@+id/setting_string"
+        android:title="Settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>
