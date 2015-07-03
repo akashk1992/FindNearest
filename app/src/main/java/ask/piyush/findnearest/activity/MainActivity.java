@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.clustering.ClusterManager;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.json.JSONObject;
 
@@ -58,6 +59,7 @@ import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.Result;
+import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.PromptUser;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
@@ -82,13 +84,18 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     // Declare a variable for the cluster manager.
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
-
+    private ProgressWheel progressWheel;
+    private ProgressWheel progressWheelOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        progressWheelOut = (ProgressWheel) findViewById(R.id.progress_wheel_out);
+        LoadingBar.showProgressWheel(true, progressWheel, drawerLayout);
         setUpNavigationDrawer();
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
@@ -125,6 +132,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 PromptUser.displayPromptMessage(this, context.getString(R.string.gps_prompt_msg));
             } else {
+                Log.d("test", "setup map called");
+                LoadingBar.showProgressWheel(false, progressWheel, drawerLayout);
                 setUpMapIfNeeded();
 //                callMapFragment();
             }
@@ -172,7 +181,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private void setUpNavigationDrawer() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
         actionBar = getSupportActionBar();
         mDrawerList = (ListView) findViewById(R.id.nav_drawer_list);
@@ -228,6 +236,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = drawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.setting_string).setVisible(!drawerOpen);
+        menu.findItem(R.id.start).setVisible(!drawerOpen);
+        menu.findItem(R.id.stop).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -244,21 +254,18 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (id == R.id.setting_string) {
             return true;
         }
+        if (id == R.id.start) {
+            return true;
+        }
+        if (id == R.id.stop) {
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        /*mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(LocationServices.API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, 0, this)
-                .build();
-        mGoogleApiClient.connect();*/
         setUpMapIfNeeded();
         mDrawerToggle.syncState();
     }
@@ -274,6 +281,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 // 1) select item
 // 2) update title(call @overriden setTitle() method)
 // 3) close Drawer
+        LoadingBar.showProgressWheel(true, progressWheel, drawerLayout);
         TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
         String selectedDrawerItem = drawerListText.getText().toString();
         String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase());
@@ -316,20 +324,21 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.Response jsonResponse = mapping.getPlacesResponse(response.toString());
                         List<Result> placesResponse = jsonResponse.getResults();
-                        List<MyItem> items = new ArrayList();
+                        List<MyItem> clusterItems = new ArrayList();
                         List<LatLng> latLngs = new ArrayList<>();
                         if (!(placesResponse.size() == 0)) {
                             for (int i = 0; i < placesResponse.size(); i++) {
                                 lat = placesResponse.get(i).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(i).getGeometry().getLocation().getLng();
                                 latLngs.add(new LatLng(lat, lng));
-                                items.add(new MyItem(lat, lng, R.drawable.reddot));
+                                clusterItems.add(new MyItem(lat, lng, R.drawable.reddot));
                             }
-                            addPlacesToCluster(items);
+                            addPlacesToCluster(clusterItems);
                             createPolylinesToClusters(latLngs);
                         } else {
                             Toast.makeText(context, "Sorry No Results Found..!", Toast.LENGTH_LONG).show();
                         }
+                        LoadingBar.showProgressWheel(false, progressWheel, drawerLayout);
                     }
                 },
                 new Response.ErrorListener() {
@@ -338,6 +347,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onErrorResponse(VolleyError error) {
                         // hide the progress dialog
                         Toast.makeText(getContext(), "Something Went Wrong..!", Toast.LENGTH_LONG).show();
+                        LoadingBar.showProgressWheel(false, progressWheel, drawerLayout);
                     }
                 });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);

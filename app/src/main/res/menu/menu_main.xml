@@ -7,4 +7,14 @@
         android:title="Settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/start"
+        android:title="start"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/stop"
+        android:title="stop"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

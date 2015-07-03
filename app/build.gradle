@@ -10,6 +10,8 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
@@ -43,4 +45,5 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.+'
     compile 'com.google.maps.android:android-maps-utils:0.3+'
     compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.pnikosis:materialish-progress:1.5'
 }
