@@ -51,6 +51,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ask.piyush.findnearest.R;
@@ -59,6 +60,7 @@ import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.Result;
+import ask.piyush.findnearest.utils.CalculateDistance;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.PromptUser;
 import ask.piyush.findnearest.utils.VolleySingleton;
@@ -81,11 +83,13 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private GoogleMap mMap;
     private double currentLatitude;
     private double currentLongitude;
+    //harsha plaza =17.4353663,78.3920193
     // Declare a variable for the cluster manager.
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
     private ProgressWheel progressWheel;
     private ProgressWheel progressWheelOut;
+    private ArrayList<Double> distances = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -330,11 +334,17 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                             for (int i = 0; i < placesResponse.size(); i++) {
                                 lat = placesResponse.get(i).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(i).getGeometry().getLocation().getLng();
+                                distances.add(new Double(CalculateDistance.getDistanceFromLatLonInKm(lat, lng, currentLatitude, currentLongitude)));
+                                //calculateDistances(lat, lng);
                                 latLngs.add(new LatLng(lat, lng));
                                 clusterItems.add(new MyItem(lat, lng, R.drawable.reddot));
                             }
+                            ArrayList<Double> distBeforeSort = new ArrayList(distances);
+                            Collections.sort(distances);
+                            int nearestPlaceIndex = distBeforeSort.indexOf(distances.get(0));
                             addPlacesToCluster(clusterItems);
-                            createPolylinesToClusters(latLngs);
+//                            createPolylinesToClusters(latLngs);
+                            createPolylineToNearest(nearestPlaceIndex, placesResponse);
                         } else {
                             Toast.makeText(context, "Sorry No Results Found..!", Toast.LENGTH_LONG).show();
                         }
@@ -351,6 +361,22 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     }
                 });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void createPolylineToNearest(int nearestPlaceIndex, List<Result> placesResponse) {
+        Polyline polyline;
+        if (polylineList != null) {
+            for (Polyline polyline1 : polylineList)
+                polyline1.remove();
+        }
+        double lat = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLat();
+        double lng = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLng();
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .add(new LatLng(lat, lng))
+                .add(new LatLng(currentLatitude, currentLongitude));
+        polyline = mMap.addPolyline(polylineOptions);
+        polyline.setGeodesic(true);
+        polylineList.add(polyline);
     }
 
     private void createPolylinesToClusters(List<LatLng> latLngs) {

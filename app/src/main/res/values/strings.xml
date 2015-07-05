@@ -17,4 +17,7 @@
     <string name="me">Me</string>
     <string name="maps_web_service_api">AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk</string>
     <string name="web_service_url">https://maps.googleapis.com/maps/api/place/nearbysearch/json?</string>
+    <string name="web_service_url_for_direction">https://maps.googleapis.com/maps/api/directions/json?</string>
+    <!--https://maps.googleapis.com/maps/api/directions/json?origin=ameerpet%20maitrivanam&destination=madhapur%20police%20station&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->
+    <!--https://maps.googleapis.com/maps/api/directions/json?origin=17.312154,78.131321&destination=17.945217,78.374912&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->
 </resources>
