@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 import com.google.maps.android.clustering.ClusterManager;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -59,7 +60,9 @@ import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
-import ask.piyush.findnearest.model.Result;
+import ask.piyush.findnearest.model.direction.DirectionResponse;
+import ask.piyush.findnearest.model.direction.Step;
+import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.CalculateDistance;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.PromptUser;
@@ -326,7 +329,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         double lng;
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
-                        ask.piyush.findnearest.model.Response jsonResponse = mapping.getPlacesResponse(response.toString());
+                        ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
                         List<Result> placesResponse = jsonResponse.getResults();
                         List<MyItem> clusterItems = new ArrayList();
                         List<LatLng> latLngs = new ArrayList<>();
@@ -335,7 +338,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                                 lat = placesResponse.get(i).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(i).getGeometry().getLocation().getLng();
                                 distances.add(new Double(CalculateDistance.getDistanceFromLatLonInKm(lat, lng, currentLatitude, currentLongitude)));
-                                //calculateDistances(lat, lng);
                                 latLngs.add(new LatLng(lat, lng));
                                 clusterItems.add(new MyItem(lat, lng, R.drawable.reddot));
                             }
@@ -364,22 +366,56 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private void createPolylineToNearest(int nearestPlaceIndex, List<Result> placesResponse) {
+        //create polyline to nearest one
         Polyline polyline;
         if (polylineList != null) {
             for (Polyline polyline1 : polylineList)
                 polyline1.remove();
         }
-        double lat = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLat();
-        double lng = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLng();
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .add(new LatLng(lat, lng))
-                .add(new LatLng(currentLatitude, currentLongitude));
-        polyline = mMap.addPolyline(polylineOptions);
-        polyline.setGeodesic(true);
-        polylineList.add(polyline);
+        double destinationLat = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLat();
+        double destinationLng = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLng();
+        createActualPath(destinationLat, destinationLng);
+    }
+
+    private void createActualPath(double lat, double lng) {
+        webServiceCallForActualPath(lat, lng);
+    }
+
+    private void webServiceCallForActualPath(double destinationLat, double destinationLng) {
+        String path = "https://maps.googleapis.com/maps/api/directions/json?" +
+                "origin=" + currentLatitude + "," + currentLongitude +
+                "&destination=" + destinationLat + "," + destinationLng +
+                "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                path, "",
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("test", "path: " + response);
+                        DirectionResponse directionResponse = new PojoMapping().getDirectionResponse(response.toString());
+                        List<Step> steps = directionResponse.getRoutes().get(0).getLegs().get(0).getSteps();
+//                        Log.d("test", "" + );
+                        for (int i = 0; i < steps.size(); i++) {
+                            direction(steps.get(i).getPolyline().getPoints());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("test", "Something Went Wrong While getting Directions");
+                    }
+                });
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void direction(String points) {
+        List<LatLng> decodedPath = PolyUtil.decode(points);
+        mMap.addPolyline(new PolylineOptions().addAll(decodedPath));
     }
 
     private void createPolylinesToClusters(List<LatLng> latLngs) {
+        //create all polylines to all clusters
         Polyline polyline;
         if (polylineList != null) {
             for (Polyline polyline1 : polylineList)

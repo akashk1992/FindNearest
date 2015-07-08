@@ -1,4 +1,4 @@
-package ask.piyush.findnearest.model;
+package ask.piyush.findnearest.model.places;
 
 public class Geometry {
 

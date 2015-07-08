@@ -1,6 +1,9 @@
-package ask.piyush.findnearest.model;
+package ask.piyush.findnearest.model.direction;
 
-public class Location {
+import java.util.HashMap;
+import java.util.Map;
+
+public class EndLocation {
 
     private Double lat;
     private Double lng;
