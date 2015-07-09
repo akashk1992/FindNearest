@@ -16,18 +16,20 @@
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-    <com.pnikosis.materialishprogress.ProgressWheel
-        android:id="@+id/progress_wheel_out"
-        android:layout_width="170dp"
-        android:layout_height="170dp"
-        android:layout_centerHorizontal="true"
-        wheel:matProg_progressIndeterminate="true" />
-    <com.pnikosis.materialishprogress.ProgressWheel
-        android:id="@+id/progress_wheel"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_centerHorizontal="true"
-        wheel:matProg_progressIndeterminate="true" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_wheel_layout"
+        android:background="@android:color/white"
+        android:alpha="0"
+        android:gravity="center">
+
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:id="@+id/progress_wheel"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            wheel:matProg_progressIndeterminate="true" />
+    </LinearLayout>
 
     <ListView
         android:layout_width="200dp"

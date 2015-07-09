@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,8 +93,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
     private ProgressWheel progressWheel;
-    private ProgressWheel progressWheelOut;
-    private ArrayList<Double> distances = new ArrayList();
+    private LinearLayout progressWheelLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +102,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         context = getApplicationContext();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
-        progressWheelOut = (ProgressWheel) findViewById(R.id.progress_wheel_out);
-        LoadingBar.showProgressWheel(true, progressWheel, drawerLayout);
+        progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
+        LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         setUpNavigationDrawer();
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
@@ -140,7 +141,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 PromptUser.displayPromptMessage(this, context.getString(R.string.gps_prompt_msg));
             } else {
                 Log.d("test", "setup map called");
-                LoadingBar.showProgressWheel(false, progressWheel, drawerLayout);
+                LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
                 setUpMapIfNeeded();
 //                callMapFragment();
             }
@@ -262,9 +263,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }
         if (id == R.id.start) {
+            LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
             return true;
         }
         if (id == R.id.stop) {
+            LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -288,7 +291,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 // 1) select item
 // 2) update title(call @overriden setTitle() method)
 // 3) close Drawer
-        LoadingBar.showProgressWheel(true, progressWheel, drawerLayout);
+        LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
         String selectedDrawerItem = drawerListText.getText().toString();
         String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase());
@@ -332,13 +335,14 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
                         List<Result> placesResponse = jsonResponse.getResults();
                         List<MyItem> clusterItems = new ArrayList();
-                        List<LatLng> latLngs = new ArrayList<>();
+                        ArrayList<Double> distances = new ArrayList();
+//                        List<LatLng> latLngs = new ArrayList<>();
                         if (!(placesResponse.size() == 0)) {
                             for (int i = 0; i < placesResponse.size(); i++) {
                                 lat = placesResponse.get(i).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(i).getGeometry().getLocation().getLng();
                                 distances.add(new Double(CalculateDistance.getDistanceFromLatLonInKm(lat, lng, currentLatitude, currentLongitude)));
-                                latLngs.add(new LatLng(lat, lng));
+//                                latLngs.add(new LatLng(lat, lng));
                                 clusterItems.add(new MyItem(lat, lng, R.drawable.reddot));
                             }
                             ArrayList<Double> distBeforeSort = new ArrayList(distances);
@@ -346,11 +350,15 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                             int nearestPlaceIndex = distBeforeSort.indexOf(distances.get(0));
                             addPlacesToCluster(clusterItems);
 //                            createPolylinesToClusters(latLngs);
+                            Log.d("test", "distBeforeSort: " + distBeforeSort.size());
+                            Log.d("test", "distances: " + distances.size());
+                            distBeforeSort = null;
+                            distances = null;
                             createPolylineToNearest(nearestPlaceIndex, placesResponse);
                         } else {
                             Toast.makeText(context, "Sorry No Results Found..!", Toast.LENGTH_LONG).show();
                         }
-                        LoadingBar.showProgressWheel(false, progressWheel, drawerLayout);
+                        LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
                     }
                 },
                 new Response.ErrorListener() {
@@ -359,7 +367,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onErrorResponse(VolleyError error) {
                         // hide the progress dialog
                         Toast.makeText(getContext(), "Something Went Wrong..!", Toast.LENGTH_LONG).show();
-                        LoadingBar.showProgressWheel(false, progressWheel, drawerLayout);
+                        LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
                     }
                 });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
@@ -367,10 +375,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private void createPolylineToNearest(int nearestPlaceIndex, List<Result> placesResponse) {
         //create polyline to nearest one
-        Polyline polyline;
         if (polylineList != null) {
-            for (Polyline polyline1 : polylineList)
-                polyline1.remove();
+            for (Polyline polyline : polylineList)
+                polyline.remove();
         }
         double destinationLat = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLat();
         double destinationLng = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLng();
@@ -411,10 +418,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private void direction(String points) {
         List<LatLng> decodedPath = PolyUtil.decode(points);
-        mMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+        Polyline polyline = mMap.addPolyline(new PolylineOptions().color(Color.parseColor("#176CEE")).addAll(decodedPath));
+        polylineList.add(polyline);
     }
 
-    private void createPolylinesToClusters(List<LatLng> latLngs) {
+    /*private void createPolylinesToClusters(List<LatLng> latLngs) {
         //create all polylines to all clusters
         Polyline polyline;
         if (polylineList != null) {
@@ -429,7 +437,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             polyline.setGeodesic(true);
             polylineList.add(polyline);
         }
-    }
+    }*/
 
     private void addPlacesToCluster(List<MyItem> list) {
         mClusterManager.clearItems();
