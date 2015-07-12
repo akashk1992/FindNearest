@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,6 +50,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.clustering.ClusterManager;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.Holder;
+import com.orhanobut.dialogplus.ListHolder;
+import com.orhanobut.dialogplus.OnItemClickListener;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.json.JSONObject;
@@ -94,6 +99,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     List<Polyline> polylineList = new ArrayList<>();
     private ProgressWheel progressWheel;
     private LinearLayout progressWheelLayout;
+    private String mode = "driving";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -270,7 +276,40 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             return true;
         }
+        if (id == R.id.radius) {
+            return true;
+        }
+        if (id == R.id.travel_mode) {
+            OnItemClickListener itemClickListener = new OnItemClickListener() {
+                @Override
+                public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                    TextView textView = (TextView) view.findViewById(R.id.text_view);
+                    String selectedMode = textView.getText().toString();
+                    dialog.dismiss();
+//                    Toast.makeText(context, clickedAppName + " clicked", Toast.LENGTH_LONG).show();
+                    mode = selectedMode;
+                }
+            };
+            TravelModeAdapter adapter = new TravelModeAdapter(context);
+            showOnlyContentDialog(new ListHolder(), Gravity.BOTTOM, adapter, itemClickListener);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,
+                                       OnItemClickListener itemClickListener) {
+        Log.d("test", "show only content dialog");
+        final DialogPlus dialog = new DialogPlus.Builder(this)
+                .setContentHolder(holder)
+                .setGravity(gravity)
+                .setAdapter(adapter)
+                .setOnItemClickListener(itemClickListener)
+                .setExpanded(true)
+                .setCancelable(true)
+                .create();
+        dialog.show();
     }
 
     @Override
@@ -389,10 +428,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private void webServiceCallForActualPath(double destinationLat, double destinationLng) {
+        Log.d("mode", "mode: " + mode);
         String path = "https://maps.googleapis.com/maps/api/directions/json?" +
                 "origin=" + currentLatitude + "," + currentLongitude +
                 "&destination=" + destinationLat + "," + destinationLng +
-                "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk";
+                "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&mode=" + mode.toLowerCase();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 path, "",
                 new Response.Listener<JSONObject>() {
