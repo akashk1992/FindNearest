@@ -14,7 +14,7 @@ public class LoadingBar {
     public static void showProgressWheel(boolean b, final ProgressWheel progressWheel, LinearLayout progressBarLayout) {
         if (b) {
             progressWheel.setVisibility(View.VISIBLE);
-            progressBarLayout.setAlpha(0.4f);
+            progressBarLayout.setAlpha(0.6f);
             progressBarLayout.setEnabled(false);
             progressWheel.setBarColor(Color.RED);
             progressWheel.spin();

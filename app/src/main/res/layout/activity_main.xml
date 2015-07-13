@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_wheel_layout"
-        android:background="@android:color/holo_blue_dark"
+        android:background="@android:color/holo_purple"
         android:alpha="0"
         android:gravity="center">
 

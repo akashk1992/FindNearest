@@ -70,9 +70,9 @@ import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.Step;
 import ask.piyush.findnearest.model.places.Result;
+import ask.piyush.findnearest.utils.AlertDiaologNifty;
 import ask.piyush.findnearest.utils.CalculateDistance;
 import ask.piyush.findnearest.utils.LoadingBar;
-import ask.piyush.findnearest.utils.PromptUser;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
@@ -144,16 +144,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private void checkStatusAndCallMaps() {
         if (isNetworkAvailable()) {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                PromptUser.displayPromptMessage(this, context.getString(R.string.gps_prompt_msg));
+                new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg));
+                LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             } else {
                 Log.d("test", "setup map called");
                 LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
                 setUpMapIfNeeded();
-//                callMapFragment();
             }
         } else {
             //if Network not available prompt user
-            PromptUser.displayPromptMessage(this, context.getString(R.string.internet_prompt_msg));
+            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.internet_prompt_msg));
         }
     }
 
@@ -277,6 +277,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }
         if (id == R.id.radius) {
+            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg));
             return true;
         }
         if (id == R.id.travel_mode) {
@@ -306,7 +307,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 .setGravity(gravity)
                 .setAdapter(adapter)
                 .setOnItemClickListener(itemClickListener)
-                .setExpanded(true)
+                .setExpanded(false)
                 .setCancelable(true)
                 .create();
         dialog.show();
@@ -440,10 +441,17 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onResponse(JSONObject response) {
                         Log.d("test", "path: " + response);
                         DirectionResponse directionResponse = new PojoMapping().getDirectionResponse(response.toString());
-                        List<Step> steps = directionResponse.getRoutes().get(0).getLegs().get(0).getSteps();
+                        String status = directionResponse.getStatus();
+                        if (status.equalsIgnoreCase("OK")) {
+                            List<Step> steps = directionResponse.getRoutes().get(0).getLegs().get(0).getSteps();
 //                        Log.d("test", "" + );
-                        for (int i = 0; i < steps.size(); i++) {
-                            direction(steps.get(i).getPolyline().getPoints());
+                            for (int i = 0; i < steps.size(); i++) {
+                                direction(steps.get(i).getPolyline().getPoints());
+                            }
+                        } else if (status.equalsIgnoreCase("ZERO_RESULTS")) {
+                            Toast.makeText(getContext(), "Zero Results Found", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getContext(), "Oops!\nSomething Went Wrong\n Please Try Again Later", Toast.LENGTH_LONG).show();
                         }
                     }
                 },
