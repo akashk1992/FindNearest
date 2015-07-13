@@ -144,7 +144,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private void checkStatusAndCallMaps() {
         if (isNetworkAvailable()) {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg));
+                new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg), false);
                 LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             } else {
                 Log.d("test", "setup map called");
@@ -153,7 +153,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             }
         } else {
             //if Network not available prompt user
-            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.internet_prompt_msg));
+            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.internet_prompt_msg), false);
         }
     }
 
@@ -277,7 +277,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }
         if (id == R.id.radius) {
-            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg));
+            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg),true);
             return true;
         }
         if (id == R.id.travel_mode) {
