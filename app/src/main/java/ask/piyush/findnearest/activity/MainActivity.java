@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -94,12 +95,13 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private double currentLatitude;
     private double currentLongitude;
     //harsha plaza =17.4353663,78.3920193
-    // Declare a variable for the cluster manager.
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
     private ProgressWheel progressWheel;
     private LinearLayout progressWheelLayout;
     private String mode = "driving";
+    private List<Result> placesResponse;
+    private int nearestPlaceIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +135,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1000).show();
             } else {
-                Toast.makeText(getContext(), "This device is not supported.", Toast.LENGTH_LONG)
+                Toast.makeText(getContext(), getString(R.string.device_not_supported), Toast.LENGTH_LONG)
                         .show();
             }
             return false;
@@ -144,7 +146,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private void checkStatusAndCallMaps() {
         if (isNetworkAvailable()) {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg), false);
+                new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg), Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             } else {
                 Log.d("test", "setup map called");
@@ -153,7 +155,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             }
         } else {
             //if Network not available prompt user
-            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.internet_prompt_msg), false);
+            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.internet_prompt_msg));
         }
     }
 
@@ -191,7 +193,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) return true;
+        else return false;
     }
 
     private void setUpNavigationDrawer() {
@@ -277,7 +280,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }
         if (id == R.id.radius) {
-            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg), true);
+            new AlertDiaologNifty().dialogShow(this, getString(R.string.enter_radius), R.layout.custom_alert_view);
             return true;
         }
         if (id == R.id.travel_mode) {
@@ -289,6 +292,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     dialog.dismiss();
 //                    Toast.makeText(context, clickedAppName + " clicked", Toast.LENGTH_LONG).show();
                     mode = selectedMode;
+                    if (placesResponse != null)
+                        createPolylineToNearest(nearestPlaceIndex, placesResponse);
+                    else {
+                        //alert to choose place category
+                        new AlertDiaologNifty().dialogShow(MainActivity.this, getString(R.string.select_place_alert));
+                    }
                 }
             };
             TravelModeAdapter adapter = new TravelModeAdapter(context);
@@ -351,14 +360,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private void setUpClusterer() {
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(17.1234576, 78.1234570), 12.0f));
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(17.1234576, 78.1234570), 12.0f));
         // Add cluster items (markers) to the cluster manager.
+//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(17.1234576, 78.1234570), 12.0f));
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
         mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager));
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
-//        addPlacesToCluster();
     }
 
     private void webServiceapiCall(String placesWebServiceUrl) {
@@ -370,26 +377,24 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onResponse(JSONObject response) {
                         double lat;
                         double lng;
+                        mode = "driving";
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
-                        List<Result> placesResponse = jsonResponse.getResults();
+                        placesResponse = jsonResponse.getResults();
                         List<MyItem> clusterItems = new ArrayList();
                         ArrayList<Double> distances = new ArrayList();
-//                        List<LatLng> latLngs = new ArrayList<>();
                         if (!(placesResponse.size() == 0)) {
                             for (int i = 0; i < placesResponse.size(); i++) {
                                 lat = placesResponse.get(i).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(i).getGeometry().getLocation().getLng();
                                 distances.add(new Double(CalculateDistance.getDistanceFromLatLonInKm(lat, lng, currentLatitude, currentLongitude)));
-//                                latLngs.add(new LatLng(lat, lng));
                                 clusterItems.add(new MyItem(lat, lng, R.drawable.reddot));
                             }
                             ArrayList<Double> distBeforeSort = new ArrayList(distances);
                             Collections.sort(distances);
-                            int nearestPlaceIndex = distBeforeSort.indexOf(distances.get(0));
+                            nearestPlaceIndex = distBeforeSort.indexOf(distances.get(0));
                             addPlacesToCluster(clusterItems);
-//                            createPolylinesToClusters(latLngs);
                             Log.d("test", "distBeforeSort: " + distBeforeSort.size());
                             Log.d("test", "distances: " + distances.size());
                             distBeforeSort = null;
@@ -421,11 +426,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         }
         double destinationLat = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLat();
         double destinationLng = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLng();
-        createActualPath(destinationLat, destinationLng);
-    }
-
-    private void createActualPath(double lat, double lng) {
-        webServiceCallForActualPath(lat, lng);
+        webServiceCallForActualPath(destinationLat, destinationLng);
     }
 
     private void webServiceCallForActualPath(double destinationLat, double destinationLng) {
@@ -469,23 +470,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         Polyline polyline = mMap.addPolyline(new PolylineOptions().color(Color.parseColor("#176CEE")).addAll(decodedPath));
         polylineList.add(polyline);
     }
-
-    /*private void createPolylinesToClusters(List<LatLng> latLngs) {
-        //create all polylines to all clusters
-        Polyline polyline;
-        if (polylineList != null) {
-            for (Polyline polyline1 : polylineList)
-                polyline1.remove();
-        }
-        for (LatLng latLng : latLngs) {
-            PolylineOptions polylineOptions = new PolylineOptions()
-                    .add(latLng)
-                    .add(new LatLng(currentLatitude, currentLongitude));
-            polyline = mMap.addPolyline(polylineOptions);
-            polyline.setGeodesic(true);
-            polylineList.add(polyline);
-        }
-    }*/
 
     private void addPlacesToCluster(List<MyItem> list) {
         mClusterManager.clearItems();
