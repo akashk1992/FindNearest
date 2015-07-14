@@ -277,7 +277,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }
         if (id == R.id.radius) {
-            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg),true);
+            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg), true);
             return true;
         }
         if (id == R.id.travel_mode) {
@@ -334,7 +334,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
         String selectedDrawerItem = drawerListText.getText().toString();
-        String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase());
+        String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase().replace(' ', '_'));
         Log.d("test", "websrvc: " + placesWebServiceUrl);
         webServiceapiCall(placesWebServiceUrl);
         mDrawerList.setItemChecked(position, true);
@@ -544,6 +544,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setZoomControlsEnabled(true);
                 mMap.getUiSettings().setZoomGesturesEnabled(true);
+                mMap.getUiSettings().setMapToolbarEnabled(false);
                 setUpClusterer();
                 setUpMap();
             }
@@ -600,7 +601,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             View rootView = inflater.inflate(R.layout.drawer_list_item, parent, false);
             TextView listText = (TextView) rootView.findViewById(R.id.drawer_list_text);
             ImageView listIcon = (ImageView) rootView.findViewById(R.id.drawer_list_icon);
-            listIcon.setBackground(getResources().getDrawable(mIcons[position]));
+            if (position <= 3)
+                listIcon.setBackground(getResources().getDrawable(mIcons[position]));
+            else listIcon.setBackground(getResources().getDrawable(R.drawable.me));
             listText.setTypeface(Typeface.createFromAsset(getAssets(), "font/RobotoCondensed-Regular.ttf"));
             listText.setText(mTitles[position]);
             return rootView;

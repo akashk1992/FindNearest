@@ -25,7 +25,7 @@ public class AlertDiaologNifty {
 //                .withIcon(FindNearestApp.getContext().getResources().getDrawable(R.drawable.icon))
                 .isCancelableOnTouchOutside(false)                           //def    | isCancelable(true)
                 .withDuration(700)                                          //def
-                .withEffect(Effectstype.Fall)                                         //def Effectstype.Slidetop
+                .withEffect(Effectstype.Slidetop)                                         //def Effectstype.Slidetop
                 .withButton1Text("OK")                                      //def gone
                 .withButton2Text("Cancel")                                  //def gone
                 .setButton1Click(new View.OnClickListener() {

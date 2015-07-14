@@ -9,6 +9,12 @@
         <item>Petrol Pump</item>
         <item>Hospital</item>
         <item>Restaurant</item>
+        <item>Movie Theater</item>
+        <item>Police</item>
+        <item>bakery</item>
+        <item>Laundry</item>
+        <item>Liquor Store</item>
+        <item>Bar</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
