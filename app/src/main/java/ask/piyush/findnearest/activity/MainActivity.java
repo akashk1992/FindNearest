@@ -149,7 +149,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg), Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             } else {
-                Log.d("test", "setup map called");
                 LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
                 setUpMapIfNeeded();
             }
@@ -207,7 +206,10 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 R.drawable.atm55,
                 R.drawable.petrol55,
                 R.drawable.hosital55,
-                R.drawable.ic_launcher};
+                R.drawable.beer55,
+                R.drawable.citypoliceicon55,
+                R.drawable.laundary55,
+                R.drawable.restaurant};
         //custome drawer list
         CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
         mDrawerList.setAdapter(customeDrawerListAdapter);
@@ -252,9 +254,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = drawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.setting_string).setVisible(!drawerOpen);
-        menu.findItem(R.id.start).setVisible(!drawerOpen);
-        menu.findItem(R.id.stop).setVisible(!drawerOpen);
+//        menu.findItem(R.id.setting_string).setVisible(!drawerOpen);
+//        menu.findItem(R.id.start).setVisible(!drawerOpen);
+//        menu.findItem(R.id.stop).setVisible(!drawerOpen);
+        menu.findItem(R.id.radius).setVisible(!drawerOpen);
+        menu.findItem(R.id.travel_mode).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -268,7 +272,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        if (id == R.id.setting_string) {
+     /*   if (id == R.id.setting_string) {
             return true;
         }
         if (id == R.id.start) {
@@ -278,7 +282,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (id == R.id.stop) {
             LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             return true;
-        }
+        }*/
         if (id == R.id.radius) {
             new AlertDiaologNifty().dialogShow(this, getString(R.string.enter_radius), R.layout.custom_alert_view);
             return true;
@@ -295,7 +299,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     if (placesResponse != null)
                         createPolylineToNearest(nearestPlaceIndex, placesResponse);
                     else {
-                        //alert to choose place category
+                        //alert to choose place category first
                         new AlertDiaologNifty().dialogShow(MainActivity.this, getString(R.string.select_place_alert));
                     }
                 }
@@ -504,8 +508,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(5000);//request sent at given sec
+//        mLocationRequest.setFastestInterval(5000);//auto reception of locations at given sec
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
     }
@@ -538,14 +542,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private void setUpMap() {
         //you can call this method whenever you have new lat long
         // For dropping a marker at a point on the Map
-        mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-        // For zooming automatically to the Dropped PIN Location
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 12.0f));
+        if (mMap != null) {
+            Log.d("test","set up mapp called");
+            mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+            // For zooming automatically to the Dropped PIN Location
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), mMap.getCameraPosition().zoom));
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
