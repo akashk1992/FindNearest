@@ -102,6 +102,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private String mode = "driving";
     private List<Result> placesResponse;
     private int nearestPlaceIndex;
+    private float zoomLevel = 2.0f;
+    private int radius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,10 +208,14 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 R.drawable.atm55,
                 R.drawable.petrol55,
                 R.drawable.hosital55,
-                R.drawable.beer55,
+                R.drawable.restaurant,
+                R.drawable.me,
                 R.drawable.citypoliceicon55,
+                R.drawable.me,
                 R.drawable.laundary55,
-                R.drawable.restaurant};
+                R.drawable.me,
+                R.drawable.beer55
+        };
         //custome drawer list
         CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
         mDrawerList.setAdapter(customeDrawerListAdapter);
@@ -284,7 +290,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }*/
         if (id == R.id.radius) {
-            new AlertDiaologNifty().dialogShow(this, getString(R.string.enter_radius), R.layout.custom_alert_view);
+            radius = new AlertDiaologNifty().dialogShow(this, "", R.layout.custom_alert_view);
+            Log.d("test", "rad2: " + radius);
             return true;
         }
         if (id == R.id.travel_mode) {
@@ -357,9 +364,10 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private String buildGooglePlaceUrl(String selectedDrawerItem) {
 //        return getString(R.string.web_service_url) + "location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
+        if (radius == 0) radius = 1000;
         return getString(R.string.web_service_url) +
                 "location=" + currentLatitude + "," + currentLongitude +
-                "&radius=1000&types=" + selectedDrawerItem +
+                "&radius=" + radius + "&types=" + selectedDrawerItem +
                 "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
     }
 
@@ -381,7 +389,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onResponse(JSONObject response) {
                         double lat;
                         double lng;
-                        mode = "driving";
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 12.0f));
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
@@ -543,10 +551,14 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         //you can call this method whenever you have new lat long
         // For dropping a marker at a point on the Map
         if (mMap != null) {
-            Log.d("test","set up mapp called");
+            Log.d("test", "set up mapp called");
             mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
             // For zooming automatically to the Dropped PIN Location
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), mMap.getCameraPosition().zoom));
+            if (zoomLevel == 2.0f) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 8.0f));
+                zoomLevel = mMap.getCameraPosition().zoom;
+            } else
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), mMap.getCameraPosition().zoom));
         }
     }
 
@@ -591,9 +603,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             View rootView = inflater.inflate(R.layout.drawer_list_item, parent, false);
             TextView listText = (TextView) rootView.findViewById(R.id.drawer_list_text);
             ImageView listIcon = (ImageView) rootView.findViewById(R.id.drawer_list_icon);
-            if (position <= 3)
-                listIcon.setBackground(getResources().getDrawable(mIcons[position]));
-            else listIcon.setBackground(getResources().getDrawable(R.drawable.me));
+            listIcon.setBackground(getResources().getDrawable(mIcons[position]));
             listText.setTypeface(Typeface.createFromAsset(getAssets(), "font/RobotoCondensed-Regular.ttf"));
             listText.setText(mTitles[position]);
             return rootView;
