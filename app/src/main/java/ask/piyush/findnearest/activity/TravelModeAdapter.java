@@ -23,7 +23,7 @@ public class TravelModeAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 
     @Override
@@ -60,10 +60,10 @@ public class TravelModeAdapter extends BaseAdapter {
                 viewHolder.textView.setText("Walking");
                viewHolder.imageView.setImageResource(R.drawable.walking1);
                 break;
-            case 2:
+           /* case 2:
                 viewHolder.textView.setText("Bicycling");
                viewHolder.imageView.setImageResource(R.drawable.bicycle);
-                break;
+                break;*/
         }
 
         return view;

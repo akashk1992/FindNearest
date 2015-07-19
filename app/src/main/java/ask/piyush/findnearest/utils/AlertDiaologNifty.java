@@ -19,6 +19,10 @@ import ask.piyush.findnearest.R;
 public class AlertDiaologNifty {
     private int radius;
 
+    public int getRadius() {
+        return radius;
+    }
+
     public void dialogShow(final Context context, String message, final String action) {
         final NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(context);
         dialogBuilder.withTitle("Alert!").withMessage(message)
@@ -28,7 +32,6 @@ public class AlertDiaologNifty {
                 .withDialogColor("#009688")
 //                .withIcon(FindNearestApp.getContext().getResources().getDrawable(R.drawable.icon))
                 .isCancelableOnTouchOutside(false)
-                .withDuration(700)
                 .withEffect(Effectstype.Slidetop)
                 .withButton1Text("OK")
                 .withButton2Text("Cancel")
@@ -37,7 +40,7 @@ public class AlertDiaologNifty {
                     public void onClick(View v) {
                         if (action != null)
                             context.startActivity(new Intent(action));
-                        dialogBuilder.dismiss();
+                        dialogBuilder.cancel();
                     }
                 })
                 .setButton2Click(new View.OnClickListener() {
@@ -60,20 +63,18 @@ public class AlertDiaologNifty {
                 .withDialogColor("#009688")
 //                .withIcon(FindNearestApp.getContext().getResources().getDrawable(R.drawable.icon))
                 .isCancelableOnTouchOutside(false)
-                .withDuration(700)
-                .withEffect(Effectstype.Slidetop)
+                .withEffect(Effectstype.Fall)
                 .withButton1Text("OK")
                 .setButton1Click(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dialogBuilder.dismiss();
+                        dialogBuilder.cancel();
                     }
                 });
         dialogBuilder.show();
-
     }
 
-    public int dialogShow(final Context context, String message, int layout) {
+    public void dialogShow(final Context context, String message, int layout) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(layout, null);
         final EditText radius_input = (EditText) view.findViewById(R.id.radius_input);
@@ -85,8 +86,7 @@ public class AlertDiaologNifty {
                 .withDialogColor("#009688")
 //                .withIcon(FindNearestApp.getContext().getResources().getDrawable(R.drawable.icon))
                 .isCancelableOnTouchOutside(false)
-                .withDuration(700)
-                .withEffect(Effectstype.Slidetop).setCustomView(view, context)
+                .withEffect(Effectstype.Fall).setCustomView(view, context)
                 .withButton1Text("OK")
                 .withButton2Text("Cancel")
                 .setButton1Click(new View.OnClickListener() {
@@ -97,7 +97,7 @@ public class AlertDiaologNifty {
                             double aDouble = Double.parseDouble(input);
                             radius = (int) (1000 * aDouble);
                             Log.d("test", "radius1: " + radius);
-                            dialogBuilder.dismiss();
+                            dialogBuilder.cancel();
                         } else
                             Toast.makeText(context, "Please Enter Radius", Toast.LENGTH_LONG).show();
                     }
@@ -109,6 +109,5 @@ public class AlertDiaologNifty {
                     }
                 });
         dialogBuilder.show();
-        return radius;
     }
 }

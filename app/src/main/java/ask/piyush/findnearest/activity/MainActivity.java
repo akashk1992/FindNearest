@@ -104,6 +104,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private int nearestPlaceIndex;
     private float zoomLevel = 2.0f;
     private int radius;
+    private AlertDiaologNifty alertDialogRadius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,16 +206,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         mNavTitle = getResources().getStringArray(R.array.places_array);
 //        mNavIcons = getResources().getIntArray(R.array.nav_drawer_icons);
         mNavIcons = new int[]{
-                R.drawable.atm55,
-                R.drawable.petrol55,
-                R.drawable.hosital55,
+                R.drawable.atm32,
+                R.drawable.petrol32,
+                R.drawable.hosital32,
                 R.drawable.restaurant,
                 R.drawable.me,
-                R.drawable.citypoliceicon55,
+                R.drawable.citypoliceicon32,
                 R.drawable.me,
-                R.drawable.laundary55,
+                R.drawable.laundary32,
                 R.drawable.me,
-                R.drawable.beer55
+                R.drawable.beer32
         };
         //custome drawer list
         CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
@@ -290,8 +291,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }*/
         if (id == R.id.radius) {
-            radius = new AlertDiaologNifty().dialogShow(this, "", R.layout.custom_alert_view);
-            Log.d("test", "rad2: " + radius);
+            alertDialogRadius = new AlertDiaologNifty();
+            alertDialogRadius.dialogShow(this, "", R.layout.custom_alert_view);
             return true;
         }
         if (id == R.id.travel_mode) {
@@ -307,7 +308,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         createPolylineToNearest(nearestPlaceIndex, placesResponse);
                     else {
                         //alert to choose place category first
-                        new AlertDiaologNifty().dialogShow(MainActivity.this, getString(R.string.select_place_alert));
+                        AlertDiaologNifty alert = new AlertDiaologNifty();
+                        alert.dialogShow(MainActivity.this, getString(R.string.select_place_alert));
+                        alert = null;
                     }
                 }
             };
@@ -315,7 +318,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             showOnlyContentDialog(new ListHolder(), Gravity.BOTTOM, adapter, itemClickListener);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -356,7 +358,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         String selectedDrawerItem = drawerListText.getText().toString();
         String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase().replace(' ', '_'));
         Log.d("test", "websrvc: " + placesWebServiceUrl);
-        webServiceapiCall(placesWebServiceUrl);
+        webServiceapiCall(placesWebServiceUrl, position);
         mDrawerList.setItemChecked(position, true);
         setTitle(mNavTitle[position]);
         drawerLayout.closeDrawer(mDrawerList);
@@ -364,23 +366,26 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private String buildGooglePlaceUrl(String selectedDrawerItem) {
 //        return getString(R.string.web_service_url) + "location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
+        radius = alertDialogRadius.getRadius();
         if (radius == 0) radius = 1000;
+        Log.d("test", "web rad: " + radius);
         return getString(R.string.web_service_url) +
                 "location=" + currentLatitude + "," + currentLongitude +
                 "&radius=" + radius + "&types=" + selectedDrawerItem +
                 "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
+        /*return getString(R.string.web_service_url) +
+                "location=17.4353663,78.3920193" +
+                "&radius=" + radius + "&types=" + selectedDrawerItem +
+                "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";*/
     }
 
     private void setUpClusterer() {
-        // Add cluster items (markers) to the cluster manager.
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(17.1234576, 78.1234570), 12.0f));
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
-        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager));
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
     }
 
-    private void webServiceapiCall(String placesWebServiceUrl) {
+    private void webServiceapiCall(String placesWebServiceUrl, final int position) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 placesWebServiceUrl, "",
                 new Response.Listener<JSONObject>() {
@@ -389,7 +394,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onResponse(JSONObject response) {
                         double lat;
                         double lng;
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 12.0f));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 16.0f));
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
@@ -397,16 +402,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         List<MyItem> clusterItems = new ArrayList();
                         ArrayList<Double> distances = new ArrayList();
                         if (!(placesResponse.size() == 0)) {
-                            for (int i = 0; i < placesResponse.size(); i++) {
-                                lat = placesResponse.get(i).getGeometry().getLocation().getLat();
-                                lng = placesResponse.get(i).getGeometry().getLocation().getLng();
+                            for (int index = 0; index < placesResponse.size(); index++) {
+                                lat = placesResponse.get(index).getGeometry().getLocation().getLat();
+                                lng = placesResponse.get(index).getGeometry().getLocation().getLng();
                                 distances.add(new Double(CalculateDistance.getDistanceFromLatLonInKm(lat, lng, currentLatitude, currentLongitude)));
-                                clusterItems.add(new MyItem(lat, lng, R.drawable.reddot));
+                                clusterItems.add(new MyItem(lat, lng, R.drawable.atm55, placesResponse.get(index).getName()));
                             }
                             ArrayList<Double> distBeforeSort = new ArrayList(distances);
                             Collections.sort(distances);
                             nearestPlaceIndex = distBeforeSort.indexOf(distances.get(0));
-                            addPlacesToCluster(clusterItems);
+                            addPlacesToCluster(clusterItems, position);
                             Log.d("test", "distBeforeSort: " + distBeforeSort.size());
                             Log.d("test", "distances: " + distances.size());
                             distBeforeSort = null;
@@ -483,9 +488,10 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         polylineList.add(polyline);
     }
 
-    private void addPlacesToCluster(List<MyItem> list) {
+    private void addPlacesToCluster(List<MyItem> list, int position) {
         mClusterManager.clearItems();
         mClusterManager.addItems(list);
+        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager, mNavIcons[position], placesResponse));
         mClusterManager.cluster();
     }
 
@@ -555,7 +561,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
             // For zooming automatically to the Dropped PIN Location
             if (zoomLevel == 2.0f) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 8.0f));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 16.0f));
                 zoomLevel = mMap.getCameraPosition().zoom;
             } else
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), mMap.getCameraPosition().zoom));

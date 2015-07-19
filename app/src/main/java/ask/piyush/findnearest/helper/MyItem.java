@@ -9,8 +9,10 @@ import com.google.maps.android.clustering.ClusterItem;
 public class MyItem implements ClusterItem {
     public final LatLng mPosition;
     public final int clusterIcon;
+    public String placeName;
 
-    public MyItem(double lat, double lng, int clusterIcon) {
+    public MyItem(double lat, double lng, int clusterIcon, String placesResponse) {
+        this.placeName = placesResponse;
         mPosition = new LatLng(lat, lng);
         this.clusterIcon = clusterIcon;
     }
