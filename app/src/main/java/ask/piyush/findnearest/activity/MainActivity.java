@@ -279,7 +279,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-     /*   if (id == R.id.setting_string) {
+      /*if (id == R.id.setting_string) {
             return true;
         }
         if (id == R.id.start) {
@@ -309,8 +309,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     else {
                         //alert to choose place category first
                         AlertDiaologNifty alert = new AlertDiaologNifty();
-                        alert.dialogShow(MainActivity.this, getString(R.string.select_place_alert));
-                        alert = null;
+//                        alert.dialogShow(MainActivity.this, getString(R.string.select_place_alert));
+                        alert.matrialDialog(MainActivity.this, getString(R.string.select_place_alert));
                     }
                 }
             };
@@ -323,7 +323,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,
                                        OnItemClickListener itemClickListener) {
-        Log.d("test", "show only content dialog");
         final DialogPlus dialog = new DialogPlus.Builder(this)
                 .setContentHolder(holder)
                 .setGravity(gravity)
@@ -366,7 +365,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private String buildGooglePlaceUrl(String selectedDrawerItem) {
 //        return getString(R.string.web_service_url) + "location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
-        radius = alertDialogRadius.getRadius();
+        if (alertDialogRadius != null)
+            radius = alertDialogRadius.getRadius();
         if (radius == 0) radius = 1000;
         Log.d("test", "web rad: " + radius);
         return getString(R.string.web_service_url) +
@@ -452,6 +452,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 "origin=" + currentLatitude + "," + currentLongitude +
                 "&destination=" + destinationLat + "," + destinationLng +
                 "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&mode=" + mode.toLowerCase();
+        Log.d("test", "direction: " + path);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 path, "",
                 new Response.Listener<JSONObject>() {
@@ -462,7 +463,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         String status = directionResponse.getStatus();
                         if (status.equalsIgnoreCase("OK")) {
                             List<Step> steps = directionResponse.getRoutes().get(0).getLegs().get(0).getSteps();
-//                        Log.d("test", "" + );
                             for (int i = 0; i < steps.size(); i++) {
                                 direction(steps.get(i).getPolyline().getPoints());
                             }

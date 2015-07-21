@@ -2,7 +2,11 @@ package ask.piyush.findnearest.helper;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -10,9 +14,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.List;
 
+import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.model.places.Result;
 
 /**
@@ -24,7 +30,7 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     private final ClusterManager<MyItem> clusterManager;
     private ImageView mImageView;
     private int mNavIcon;
-    private ImageView mClusterImageView;
+    private TextView mClusterItem;
     private int mDimension;
 
     public CustomeClusterRendered(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager, int mNavIcon, List<Result> placesResponse) {
@@ -35,14 +41,15 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
         /*final IconGenerator mIconGenerator = new IconGenerator(context);
         final IconGenerator mClusterIconGenerator = new IconGenerator(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View multiProfile = inflater.inflate(R.layout.custome_cluster, null);
-        mClusterIconGenerator.setContentView(multiProfile);
-        mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
-        mImageView = new ImageView(context);
+        View view = inflater.inflate(R.layout.custome_cluster, null);
+        mClusterIconGenerator.setContentView(view);
+        mClusterItem = (TextView) view.findViewById(R.id.info_window);
+//        mImageView = new ImageView(context);
         int padding = 2;
-        mImageView.setLayoutParams(new ViewGroup.LayoutParams(10, 10));
-        mImageView.setPadding(padding, padding, padding, padding);
-        mIconGenerator.setContentView(mImageView);*/
+//        mImageView.setLayoutParams(new ViewGroup.LayoutParams(10, 10));
+        mClusterItem.setLayoutParams(new ViewGroup.LayoutParams(10, 10));
+        mClusterItem.setPadding(padding, padding, padding, padding);
+        mIconGenerator.setContentView(mClusterItem);*/
     }
 
     @Override
@@ -84,5 +91,6 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     @Override
     public void onClusterItemInfoWindowClick(MyItem myItem) {
         Log.d("test", "onClusterItemInfoWindowClick" + myItem.placeName);
+//        mClusterItem.setText(myItem.placeName);
     }
 }

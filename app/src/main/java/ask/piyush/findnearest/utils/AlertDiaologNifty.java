@@ -10,8 +10,11 @@ import android.widget.Toast;
 
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
+import com.orhanobut.dialogplus.OnItemClickListener;
 
 import ask.piyush.findnearest.R;
+import ask.piyush.findnearest.activity.MainActivity;
+import me.drakeet.materialdialog.MaterialDialog;
 
 /**
  * Created by piyush on 13/7/15.
@@ -109,5 +112,18 @@ public class AlertDiaologNifty {
                     }
                 });
         dialogBuilder.show();
+    }
+
+    public void matrialDialog(MainActivity context, String message) {
+        final MaterialDialog mMaterialDialog = new MaterialDialog(context);
+        mMaterialDialog.setTitle("MaterialDialog")
+                .setMessage(message)
+                .setPositiveButton("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                });
+        mMaterialDialog.show();
     }
 }
