@@ -3,7 +3,7 @@
 
 package ask.piyush.findnearest.model.direction;
 
-public class Northeast {
+public class End_location {
 	private Double lat;
 
  	public void setLat(Double lat) {

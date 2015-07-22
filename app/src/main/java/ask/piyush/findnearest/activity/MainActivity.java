@@ -69,7 +69,7 @@ import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.direction.DirectionResponse;
-import ask.piyush.findnearest.model.direction.Step;
+import ask.piyush.findnearest.model.direction.RoutElement;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
 import ask.piyush.findnearest.utils.CalculateDistance;
@@ -365,6 +365,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private String buildGooglePlaceUrl(String selectedDrawerItem) {
 //        return getString(R.string.web_service_url) + "location=17.4353663,78.3920193&radius=1000&types=" + selectedDrawerItem + "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
+        if (selectedDrawerItem.contains("fuel")) selectedDrawerItem = "gas_station";
         if (alertDialogRadius != null)
             radius = alertDialogRadius.getRadius();
         if (radius == 0) radius = 1000;
@@ -372,11 +373,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         return getString(R.string.web_service_url) +
                 "location=" + currentLatitude + "," + currentLongitude +
                 "&radius=" + radius + "&types=" + selectedDrawerItem +
-                "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";
-        /*return getString(R.string.web_service_url) +
-                "location=17.4353663,78.3920193" +
-                "&radius=" + radius + "&types=" + selectedDrawerItem +
-                "&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk&sensor=true";*/
+                "&key=" + getString(R.string.maps_web_service_api) + "&sensor=true";
     }
 
     private void setUpClusterer() {
@@ -394,7 +391,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onResponse(JSONObject response) {
                         double lat;
                         double lng;
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 16.0f));
+                        mMap.clear();
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14.0f));
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
                         ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
@@ -459,17 +457,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("test", "path: " + response);
-                        DirectionResponse directionResponse = new PojoMapping().getDirectionResponse(response.toString());
+                        DirectionResponse directionResponse = new PojoMapping().getResponse(response.toString());
+                        RoutElement[] routElements = directionResponse.getRoutes();
                         String status = directionResponse.getStatus();
                         if (status.equalsIgnoreCase("OK")) {
-                            List<Step> steps = directionResponse.getRoutes().get(0).getLegs().get(0).getSteps();
-                            for (int i = 0; i < steps.size(); i++) {
-                                direction(steps.get(i).getPolyline().getPoints());
-                            }
+                            String overview_polyline = routElements[0].getOverview_polyline().getPoints();
+                            direction(overview_polyline);
                         } else if (status.equalsIgnoreCase("ZERO_RESULTS")) {
-                            Toast.makeText(getContext(), "Zero Results Found", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), getString(R.string.zero_result_found), Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getContext(), "Oops!\nSomething Went Wrong\n Please Try Again Later", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
                         }
                     }
                 },
@@ -513,7 +510,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         if (mLastLocation != null) {
             currentLatitude = mLastLocation.getLatitude();
             currentLongitude = mLastLocation.getLongitude();
-        } else Toast.makeText(getContext(), "Couldn't get location..!", Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(getContext(), getString(R.string.couldnt_get_location), Toast.LENGTH_LONG).show();
     }
 
     private void startLocationUpdates() {

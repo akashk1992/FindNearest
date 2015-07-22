@@ -15,7 +15,7 @@ public class PojoMapping {
         return response;
     }
 
-    public DirectionResponse getDirectionResponse(String jsonResponse) {
+    public DirectionResponse getResponse(String jsonResponse) {
         Gson gson = new Gson();
         DirectionResponse response = gson.fromJson(jsonResponse, DirectionResponse.class);
         return response;

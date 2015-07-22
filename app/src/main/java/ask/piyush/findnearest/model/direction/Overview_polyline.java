@@ -3,7 +3,7 @@
 
 package ask.piyush.findnearest.model.direction;
 
-public class Polyline {
+public class Overview_polyline {
 	private String points;
 
  	public void setPoints(String points) {
