@@ -50,6 +50,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.Holder;
@@ -72,7 +73,6 @@ import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.RoutElement;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
-import ask.piyush.findnearest.utils.CalculateDistance;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
@@ -92,8 +92,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private int[] mNavIcons;
     private LocationManager locationManager;
     private GoogleMap mMap;
-    private double currentLatitude;
-    private double currentLongitude;
+    private double currentLatitude = 17.4353663;
+    private double currentLongitude = 78.3920193;
     //harsha plaza =17.4353663,78.3920193
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
@@ -149,7 +149,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private void checkStatusAndCallMaps() {
         if (isNetworkAvailable()) {
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                new AlertDiaologNifty().dialogShow(this, context.getString(R.string.gps_prompt_msg), Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                new AlertDiaologNifty().materialDialogForGPS(this, context.getString(R.string.gps_prompt_msg), Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             } else {
                 LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
@@ -157,7 +157,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             }
         } else {
             //if Network not available prompt user
-            new AlertDiaologNifty().dialogShow(this, context.getString(R.string.internet_prompt_msg));
+            new AlertDiaologNifty().matrialDialog(this, context.getString(R.string.internet_prompt_msg));
         }
     }
 
@@ -209,7 +209,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 R.drawable.atm32,
                 R.drawable.petrol32,
                 R.drawable.hosital32,
-                R.drawable.restaurant,
+                R.drawable.restaurant32,
                 R.drawable.me,
                 R.drawable.citypoliceicon32,
                 R.drawable.me,
@@ -292,7 +292,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         }*/
         if (id == R.id.radius) {
             alertDialogRadius = new AlertDiaologNifty();
-            alertDialogRadius.dialogShow(this, "", R.layout.custom_alert_view);
+//            alertDialogRadius.dialogShow(this, "", R.layout.custom_alert_view);
+            alertDialogRadius.materialDialogForRadius(this, "");
             return true;
         }
         if (id == R.id.travel_mode) {
@@ -392,6 +393,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         double lat;
                         double lng;
                         mMap.clear();
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14.0f));
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
@@ -403,7 +405,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                             for (int index = 0; index < placesResponse.size(); index++) {
                                 lat = placesResponse.get(index).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(index).getGeometry().getLocation().getLng();
-                                distances.add(new Double(CalculateDistance.getDistanceFromLatLonInKm(lat, lng, currentLatitude, currentLongitude)));
+                                distances.add(SphericalUtil.computeDistanceBetween(new LatLng(lat, lng), new LatLng(currentLatitude, currentLongitude)));
                                 clusterItems.add(new MyItem(lat, lng, R.drawable.atm55, placesResponse.get(index).getName()));
                             }
                             ArrayList<Double> distBeforeSort = new ArrayList(distances);

@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
-import com.orhanobut.dialogplus.OnItemClickListener;
 
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.activity.MainActivity;
@@ -114,11 +113,61 @@ public class AlertDiaologNifty {
         dialogBuilder.show();
     }
 
-    public void matrialDialog(MainActivity context, String message) {
+    public void materialDialogForRadius(final MainActivity context, String message) {
+        final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.custom_alert_view, null);
+        final EditText radius_input = (EditText) view.findViewById(R.id.radius_input);
         final MaterialDialog mMaterialDialog = new MaterialDialog(context);
-        mMaterialDialog.setTitle("MaterialDialog")
+        mMaterialDialog.setTitle("ALERT")
                 .setMessage(message)
                 .setPositiveButton("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String input = radius_input.getText().toString();
+                        if (!input.equalsIgnoreCase("")) {
+                            double aDouble = Double.parseDouble(input);
+                            radius = (int) (1000 * aDouble);
+                            Log.d("test", "radius1: " + radius);
+                            mMaterialDialog.dismiss();
+                        } else
+                            Toast.makeText(context, "Please Enter Radius", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton("Cancel", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                }).setContentView(view);
+        mMaterialDialog.show();
+    }
+
+    public void matrialDialog(MainActivity context, String message) {
+        final MaterialDialog mMaterialDialog = new MaterialDialog(context);
+        mMaterialDialog.setTitle("ALERT")
+                .setMessage(message)
+                .setPositiveButton("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                });
+        mMaterialDialog.show();
+    }
+
+    public void materialDialogForGPS(final MainActivity context, String message, final String action) {
+        final MaterialDialog mMaterialDialog = new MaterialDialog(context);
+        mMaterialDialog.setTitle("ALERT")
+                .setMessage(message)
+                .setPositiveButton("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (action != null)
+                            context.startActivity(new Intent(action));
+                        mMaterialDialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mMaterialDialog.dismiss();
