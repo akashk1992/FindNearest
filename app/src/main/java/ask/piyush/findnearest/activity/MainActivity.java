@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int[] mNavIcons;
     private LocationManager locationManager;
     private GoogleMap mMap;
-    private double currentLatitude=17.4353663;
-    private double currentLongitude=78.3920193;
+    private double currentLatitude = 17.4353663;
+    private double currentLongitude = 78.3920193;
     //harsha plaza =17.4353663,78.3920193
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
@@ -408,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 lat = placesResponse.get(index).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(index).getGeometry().getLocation().getLng();
                                 distances.add(SphericalUtil.computeDistanceBetween(new LatLng(lat, lng), new LatLng(currentLatitude, currentLongitude)));
-                                clusterItems.add(new MyItem(lat, lng, placesResponse.get(index).getName()));
+                                clusterItems.add(new MyItem(lat, lng, mNavIcons[position], placesResponse.get(index).getName()));
                             }
                             ArrayList<Double> distBeforeSort = new ArrayList(distances);
                             Collections.sort(distances);
@@ -492,7 +492,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void addPlacesToCluster(List<MyItem> list, int position) {
         mClusterManager.clearItems();
         mClusterManager.addItems(list);
-        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager, mNavIcons[position], placesResponse));
+        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager, placesResponse));
         mClusterManager.cluster();
     }
 

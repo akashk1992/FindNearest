@@ -1,10 +1,10 @@
 package ask.piyush.findnearest.helper;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +20,7 @@ import java.util.List;
 
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.model.places.Result;
+import ask.piyush.findnearest.utils.FindNearestApp;
 
 /**
  * Created by piyush on 27/6/15.
@@ -28,39 +29,39 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
 
     private final List<Result> placesResponse;
     private final ClusterManager<MyItem> clusterManager;
+    private final ImageView mClusterItemIcon;
     private ImageView mImageView;
     private int mNavIcon;
-    private TextView mClusterItem;
+    private TextView mClusterItemText;
     private int mDimension;
-    private MarkerOptions markerOptions;
+    final IconGenerator mIconGenerator = new IconGenerator(FindNearestApp.getContext());
 
-    public CustomeClusterRendered(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager, int mNavIcon, List<Result> placesResponse) {
+    public CustomeClusterRendered(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager, List<Result> placesResponse) {
         super(context, map, clusterManager);
         this.mNavIcon = mNavIcon;
         this.placesResponse = placesResponse;
         this.clusterManager = clusterManager;
-        /*final IconGenerator mIconGenerator = new IconGenerator(context);
-        final IconGenerator mClusterIconGenerator = new IconGenerator(context);
+//        final IconGenerator mClusterIconGenerator = new IconGenerator(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.custome_cluster, null);
-        mClusterIconGenerator.setContentView(view);
-        mClusterItem = (TextView) view.findViewById(R.id.info_window);
+        View view = inflater.inflate(R.layout.custome_cluster_item, null);
+//        mClusterIconGenerator.setContentView(view);
+        mClusterItemText = (TextView) view.findViewById(R.id.info_window);
+        mClusterItemIcon = (ImageView) view.findViewById(R.id.cluster_icon);
 //        mImageView = new ImageView(context);
-        int padding = 2;
-//        mImageView.setLayoutParams(new ViewGroup.LayoutParams(10, 10));
-        mClusterItem.setLayoutParams(new ViewGroup.LayoutParams(10, 10));
-        mClusterItem.setPadding(padding, padding, padding, padding);
-        mIconGenerator.setContentView(mClusterItem);*/
+//        int padding = 2;
+//        mImageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//        mClusterItemText.setLayoutParams(new ViewGroup.LayoutParams(10, 10));
+//        mClusterItemText.setPadding(padding, padding, padding, padding);
+        mIconGenerator.setContentView(view);
     }
 
     @Override
     protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions);
-        this.markerOptions=markerOptions;
-//        mImageView.setImageResource(item.clusterIcon);
-//        Bitmap icon = mIconGenerator.makeIcon();
-//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(person.name);
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(mNavIcon));
+        mClusterItemIcon.setImageResource(item.clusterIcon);
+        Bitmap icon = mIconGenerator.makeIcon();
+//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.placeName);
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(item.clusterIcon)).title(item.placeName);
         clusterManager.setOnClusterItemClickListener(this);
         clusterManager.setOnClusterClickListener(this);
         clusterManager.setOnClusterInfoWindowClickListener(this);
@@ -75,7 +76,6 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     @Override
     public boolean onClusterItemClick(MyItem myItem) {
         Log.d("test", "cluster item clicked" + myItem.placeName);
-        markerOptions.title("akash");
         return false;
     }
 
@@ -94,6 +94,6 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     @Override
     public void onClusterItemInfoWindowClick(MyItem myItem) {
         Log.d("test", "onClusterItemInfoWindowClick" + myItem.placeName);
-//        mClusterItem.setText(myItem.placeName);
+//        mClusterItemText.setText(myItem.placeName);
     }
 }
