@@ -32,6 +32,7 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     private int mNavIcon;
     private TextView mClusterItem;
     private int mDimension;
+    private MarkerOptions markerOptions;
 
     public CustomeClusterRendered(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager, int mNavIcon, List<Result> placesResponse) {
         super(context, map, clusterManager);
@@ -55,6 +56,7 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     @Override
     protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions);
+        this.markerOptions=markerOptions;
 //        mImageView.setImageResource(item.clusterIcon);
 //        Bitmap icon = mIconGenerator.makeIcon();
 //        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(person.name);
@@ -73,6 +75,7 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     @Override
     public boolean onClusterItemClick(MyItem myItem) {
         Log.d("test", "cluster item clicked" + myItem.placeName);
+        markerOptions.title("akash");
         return false;
     }
 

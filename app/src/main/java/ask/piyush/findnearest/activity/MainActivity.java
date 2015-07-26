@@ -13,8 +13,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -52,6 +52,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
+import com.manuelpeinado.glassactionbar.GlassActionBarHelper;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.Holder;
 import com.orhanobut.dialogplus.ListHolder;
@@ -79,7 +80,7 @@ import ask.piyush.findnearest.utils.VolleySingleton;
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
@@ -92,8 +93,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private int[] mNavIcons;
     private LocationManager locationManager;
     private GoogleMap mMap;
-    private double currentLatitude = 17.4353663;
-    private double currentLongitude = 78.3920193;
+    private double currentLatitude=17.4353663;
+    private double currentLongitude=78.3920193;
     //harsha plaza =17.4353663,78.3920193
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
@@ -105,6 +106,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private float zoomLevel = 2.0f;
     private int radius;
     private AlertDiaologNifty alertDialogRadius;
+    private GlassActionBarHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,8 +216,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 R.drawable.citypoliceicon32,
                 R.drawable.me,
                 R.drawable.laundary32,
-                R.drawable.me,
-                R.drawable.beer32
+                R.drawable.beer32,
+                R.drawable.bar32
         };
         //custome drawer list
         CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
@@ -406,7 +408,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                                 lat = placesResponse.get(index).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(index).getGeometry().getLocation().getLng();
                                 distances.add(SphericalUtil.computeDistanceBetween(new LatLng(lat, lng), new LatLng(currentLatitude, currentLongitude)));
-                                clusterItems.add(new MyItem(lat, lng, R.drawable.atm55, placesResponse.get(index).getName()));
+                                clusterItems.add(new MyItem(lat, lng, placesResponse.get(index).getName()));
                             }
                             ArrayList<Double> distBeforeSort = new ArrayList(distances);
                             Collections.sort(distances);
@@ -483,7 +485,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private void direction(String points) {
         List<LatLng> decodedPath = PolyUtil.decode(points);
-        Polyline polyline = mMap.addPolyline(new PolylineOptions().color(Color.parseColor("#176CEE")).addAll(decodedPath));
+        Polyline polyline = mMap.addPolyline(new PolylineOptions().color(Color.parseColor("#009688")).addAll(decodedPath));
         polylineList.add(polyline);
     }
 

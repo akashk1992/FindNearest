@@ -2,14 +2,13 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="2dp"
-    android:layout_width="@dimen/custom_profile_image"
-    android:layout_height="@dimen/custom_profile_image">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/info_window"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Bubble.TextAppearance.Light"
         android:paddingLeft="@dimen/custom_profile_padding"
         android:paddingRight="@dimen/custom_profile_padding"
         android:layout_gravity="center" />
