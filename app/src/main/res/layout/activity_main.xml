@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout">
 
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,7 +16,85 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom|right">
+        <!-- Your FAB implementation -->
+        <ask.piyush.findnearest.utils.Fab
+            android:id="@+id/fab"
+            style="@style/Widget.MaterialSheetFab.Fab"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
 
+        <!-- Overlay that dims the screen -->
+        <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <io.codetail.widget.RevealLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end|bottom"
+            android:orientation="vertical">
+
+            <!-- Sheet that contains your items -->
+            <android.support.v7.widget.CardView
+                android:id="@+id/fab_sheet"
+                style="@style/Widget.MaterialSheetFab.Sheet">
+
+                <!-- Sheet items -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Recording -->
+                    <TextView
+                        android:id="@+id/fab_sheet_item_recording"
+                        style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
+                        android:drawableLeft="@drawable/ic_mic_grey600_24dp"
+                        android:drawableStart="@drawable/ic_mic_grey600_24dp"
+                        android:text="recording" />
+
+                    <!-- Reminder -->
+                    <TextView
+                        android:id="@+id/fab_sheet_item_reminder"
+                        style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
+                        android:drawableLeft="@drawable/ic_access_alarms_grey600_24dp"
+                        android:drawableStart="@drawable/ic_access_alarms_grey600_24dp"
+                        android:text="reminder" />
+
+                    <!-- Photo -->
+                    <TextView
+                        android:id="@+id/fab_sheet_item_photo"
+                        style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
+                        android:drawableLeft="@drawable/ic_photo_camera_grey600_24dp"
+                        android:drawableStart="@drawable/ic_photo_camera_grey600_24dp"
+                        android:text="photo" />
+
+                    <!-- Note -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFEB3B">
+
+                        <TextView
+                            android:id="@+id/fab_sheet_item_note"
+                            style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
+                            android:drawableLeft="@drawable/ic_create_grey600_24dp"
+                            android:drawableStart="@drawable/ic_create_grey600_24dp"
+                            android:text="create one" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </io.codetail.widget.RevealLinearLayout>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

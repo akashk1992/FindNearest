@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
@@ -52,6 +53,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.manuelpeinado.glassactionbar.GlassActionBarHelper;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.Holder;
@@ -74,13 +77,14 @@ import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.RoutElement;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
+import ask.piyush.findnearest.utils.Fab;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
     public static GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
@@ -107,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int radius;
     private AlertDiaologNifty alertDialogRadius;
     private GlassActionBarHelper helper;
+    private MaterialSheetFab<Fab> materialSheetFab;
+    private int statusBarColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         setUpNavigationDrawer();
+        setupFab();
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         if (checkPlayServices()) {
@@ -131,6 +138,53 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     .build();
             mGoogleApiClient.connect();
             checkStatusAndCallMaps();
+        }
+    }
+
+    private void setupFab() {
+        Fab fab = (Fab) findViewById(R.id.fab);
+        View sheetView = findViewById(R.id.fab_sheet);
+        View overlay = findViewById(R.id.overlay);
+        int sheetColor = getResources().getColor(R.color.background_card);
+        int fabColor = getResources().getColor(R.color.theme_accent);
+
+        // Create material sheet FAB
+        materialSheetFab = new MaterialSheetFab<>(fab, sheetView, overlay, sheetColor, fabColor);
+
+        // Set material sheet event listener
+        materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
+            @Override
+            public void onShowSheet() {
+                // Save current status bar color
+                statusBarColor = getStatusBarColor();
+                // Set darker status bar color to match the dim overlay
+                setStatusBarColor(getResources().getColor(R.color.theme_accent));
+            }
+
+            @Override
+            public void onHideSheet() {
+                // Restore status bar color
+                setStatusBarColor(getResources().getColor(R.color.theme_accent));
+            }
+        });
+
+        // Set material sheet item click listeners
+        findViewById(R.id.fab_sheet_item_recording).setOnClickListener(this);
+        findViewById(R.id.fab_sheet_item_reminder).setOnClickListener(this);
+        findViewById(R.id.fab_sheet_item_photo).setOnClickListener(this);
+        findViewById(R.id.fab_sheet_item_note).setOnClickListener(this);
+    }
+
+    private int getStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return getWindow().getStatusBarColor();
+        }
+        return 0;
+    }
+
+    private void setStatusBarColor(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(color);
         }
     }
 
@@ -546,7 +600,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (mMap != null) {
                 // For displaying a move to my location button
                 mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
+//                mMap.getUiSettings().setZoomControlsEnabled(true);
                 mMap.getUiSettings().setZoomGesturesEnabled(true);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
                 setUpClusterer();
@@ -577,6 +631,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("test", "" + connectionResult);
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 
     private class CustomeDrawerListAdapter extends BaseAdapter {
