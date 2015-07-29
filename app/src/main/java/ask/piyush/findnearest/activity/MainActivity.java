@@ -84,7 +84,7 @@ import ask.piyush.findnearest.utils.VolleySingleton;
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         setUpNavigationDrawer();
-        setupFab();
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         if (checkPlayServices()) {
@@ -139,40 +138,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             mGoogleApiClient.connect();
             checkStatusAndCallMaps();
         }
-    }
-
-    private void setupFab() {
-        Fab fab = (Fab) findViewById(R.id.fab);
-        View sheetView = findViewById(R.id.fab_sheet);
-        View overlay = findViewById(R.id.overlay);
-        int sheetColor = getResources().getColor(R.color.background_card);
-        int fabColor = getResources().getColor(R.color.theme_accent);
-
-        // Create material sheet FAB
-        materialSheetFab = new MaterialSheetFab<>(fab, sheetView, overlay, sheetColor, fabColor);
-
-        // Set material sheet event listener
-        materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
-            @Override
-            public void onShowSheet() {
-                // Save current status bar color
-                statusBarColor = getStatusBarColor();
-                // Set darker status bar color to match the dim overlay
-                setStatusBarColor(getResources().getColor(R.color.theme_accent));
-            }
-
-            @Override
-            public void onHideSheet() {
-                // Restore status bar color
-                setStatusBarColor(getResources().getColor(R.color.theme_accent));
-            }
-        });
-
-        // Set material sheet item click listeners
-        findViewById(R.id.fab_sheet_item_recording).setOnClickListener(this);
-        findViewById(R.id.fab_sheet_item_reminder).setOnClickListener(this);
-        findViewById(R.id.fab_sheet_item_photo).setOnClickListener(this);
-        findViewById(R.id.fab_sheet_item_note).setOnClickListener(this);
     }
 
     private int getStatusBarColor() {
@@ -631,11 +596,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("test", "" + connectionResult);
-    }
-
-    @Override
-    public void onClick(View v) {
-
     }
 
     private class CustomeDrawerListAdapter extends BaseAdapter {
