@@ -28,6 +28,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private GlassActionBarHelper helper;
     private MaterialSheetFab<Fab> materialSheetFab;
     private int statusBarColor;
+    private RelativeLayout allContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,14 +241,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onStop();
     }
 
-    private void callMapFragment() {
+   /* private void callMapFragment() {
         fragmentManager = getSupportFragmentManager();
         //call initial map fragment
         MapFragment newFragment = new MapFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.commit();
-    }
+    }*/
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

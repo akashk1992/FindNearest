@@ -48,8 +48,6 @@
     <style name="Widget.MaterialSheetFab.Fab" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/fab_spacing</item>
-        <item name="android:elevation">@dimen/fab_elevation</item>
         <item name="android:src">@drawable/ic_add_grey600_24dp</item>
         <item name="fabSize">normal</item>
         <item name="borderWidth">0dp</item>
