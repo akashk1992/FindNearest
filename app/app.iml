@@ -90,13 +90,12 @@
     <orderEntry type="library" exported="" name="play-services-drive-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-appstate-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-7.3.0" level="project" />
-    <orderEntry type="library" exported="" name="arcanimator-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="niftydialogeffects-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-fitness-7.3.0" level="project" />
+    <orderEntry type="library" exported="" name="CircularFloatingActionMenu-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="materialish-progress-1.5" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-7.3.0" level="project" />
-    <orderEntry type="library" exported="" name="material-sheet-fab-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-cast-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-identity-7.3.0" level="project" />
@@ -112,7 +111,6 @@
     <orderEntry type="library" exported="" name="play-services-panorama-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="library-1.2.2" level="project" />
-    <orderEntry type="library" exported="" name="cardview-v7-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-analytics-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="renderscript-v8" level="project" />

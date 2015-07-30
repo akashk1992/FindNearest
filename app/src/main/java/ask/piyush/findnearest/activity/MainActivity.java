@@ -53,9 +53,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
-import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.manuelpeinado.glassactionbar.GlassActionBarHelper;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.Holder;
 import com.orhanobut.dialogplus.ListHolder;
@@ -77,7 +78,6 @@ import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.RoutElement;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
-import ask.piyush.findnearest.utils.Fab;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int radius;
     private AlertDiaologNifty alertDialogRadius;
     private GlassActionBarHelper helper;
-    private MaterialSheetFab<Fab> materialSheetFab;
     private int statusBarColor;
 
     @Override
@@ -122,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
+        setUpFab();
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         setUpNavigationDrawer();
         /********check GPS Status*************/
@@ -138,6 +138,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             mGoogleApiClient.connect();
             checkStatusAndCallMaps();
         }
+    }
+
+    private void setUpFab() {
+        ImageView icon = new ImageView(this); // Create an icon
+        icon.setImageDrawable(getResources().getDrawable(R.drawable.fab));
+        FloatingActionButton mainActionButton = new FloatingActionButton.Builder(this)
+                .setContentView(icon)
+                .build();
+        ImageView iconMenu1 = new ImageView(this); // Create an icon
+        iconMenu1.setImageDrawable(getResources().getDrawable(R.drawable.laundary32));
+        ImageView iconMenu2 = new ImageView(this); // Create an icon
+        iconMenu2.setImageDrawable(getResources().getDrawable(R.drawable.atm32));
+        ImageView iconMenu3 = new ImageView(this); // Create an icon
+        iconMenu3.setImageDrawable(getResources().getDrawable(R.drawable.restaurant32));
+
+        SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
+        SubActionButton menu1 = itemBuilder.setContentView(iconMenu1).build();
+        SubActionButton menu2 = itemBuilder.setContentView(iconMenu2).build();
+        SubActionButton menu3 = itemBuilder.setContentView(iconMenu3).build();
+
+        FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(this)
+                .addSubActionView(menu1)
+                .addSubActionView(menu2)
+                .addSubActionView(menu3)
+                .attachTo(mainActionButton)
+                .build();
+
     }
 
     private int getStatusBarColor() {
@@ -203,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         super.onStop();
     }
-
+/*
     private void callMapFragment() {
         fragmentManager = getSupportFragmentManager();
         //call initial map fragment
@@ -211,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.commit();
-    }
+    }*/
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
