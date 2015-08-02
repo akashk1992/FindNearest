@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:id="@+id/map_type_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="click here to choose map type"
-        android:id="@+id/map_type"
-        android:textSize="20sp"
-        android:layout_centerInParent="true" />
-</RelativeLayout>
+        android:id="@+id/map_type_satellite"
+        android:padding="10dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/map_type_selector"
+        android:src="@drawable/satellietview" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:id="@+id/map_type_normal"
+        android:adjustViewBounds="true"
+        android:background="@drawable/map_type_selector"
+        android:src="@drawable/normalmapview" />
+
+
+</LinearLayout>

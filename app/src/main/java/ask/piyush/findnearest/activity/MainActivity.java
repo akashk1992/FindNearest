@@ -28,6 +28,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private final String RADIUS_TAG = "radius";
     private final String MAP_TYPE_TAG = "maptype";
     private FloatingActionMenu floatingActionMenu;
-    private MaterialDialog mapTypeAlert;
+    private PopupWindow mapTypeAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,9 +158,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ImageView iconRadius = new ImageView(this); // Create an icon
         iconRadius.setImageDrawable(getResources().getDrawable(R.drawable.radius55));
         ImageView iconTravelMode = new ImageView(this); // Create an icon
-        iconTravelMode.setImageDrawable(getResources().getDrawable(R.drawable.travelmodes));
+        iconTravelMode.setImageDrawable(getResources().getDrawable(R.drawable.travelmodes55));
         ImageView iconMapType = new ImageView(this); // Create an icon
-        iconMapType.setImageDrawable(getResources().getDrawable(R.drawable.me));
+        iconMapType.setImageDrawable(getResources().getDrawable(R.drawable.maplayers55));
 
         SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
         SubActionButton menuRadius = itemBuilder.setContentView(iconRadius).build();
@@ -272,9 +273,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 R.drawable.petrol32,
                 R.drawable.hosital32,
                 R.drawable.restaurant32,
-                R.drawable.me,
+                R.drawable.movietheatre,
                 R.drawable.citypoliceicon32,
-                R.drawable.me,
+                R.drawable.bakeryicon,
                 R.drawable.laundary32,
                 R.drawable.beer32,
                 R.drawable.bar32
@@ -619,13 +620,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             TravelModeAdapter adapter = new TravelModeAdapter(context);
             showOnlyContentDialog(new ListHolder(), Gravity.TOP, adapter, itemClickListener);
         } else if (v.getTag().equals(MAP_TYPE_TAG)) {
-            Log.d("test", "map type tag clicked");
             floatingActionMenu.close(true);
             if (mMap != null) {
                 mapTypeAlert = new AlertDiaologNifty().materialDialogMapTypes(MainActivity.this);
             }
-        } else if (v.getTag().equals("akash")) {
-            Log.d("test", "map type chosen");
+        } else if (v.getTag().equals("normalview")) {
+            if (mMap != null) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            mapTypeAlert.dismiss();
+        } else if (v.getTag().equals("satelliteview")) {
+            if (mMap != null) mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             mapTypeAlert.dismiss();
         }
     }
