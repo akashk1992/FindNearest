@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
@@ -143,6 +144,7 @@ public class AlertDiaologNifty {
     }
 
     public void matrialDialog(MainActivity context, String message) {
+        //alert to select place first
         final MaterialDialog mMaterialDialog = new MaterialDialog(context);
         mMaterialDialog.setTitle("ALERT")
                 .setMessage(message)
@@ -174,5 +176,20 @@ public class AlertDiaologNifty {
                     }
                 });
         mMaterialDialog.show();
+    }
+
+    public MaterialDialog materialDialogMapTypes(final MainActivity context) {
+        Log.d("test", "alert for map types");
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.map_types_alert, null);
+        TextView textView = (TextView) (view).findViewById(R.id.map_type);
+        textView.setTag("akash");
+        textView.setOnClickListener(context);
+        final MaterialDialog mMaterialDialog = new MaterialDialog(context);
+        mMaterialDialog.setTitle("Choose Map Type")
+                .setCanceledOnTouchOutside(true)
+                .setContentView(view);
+        mMaterialDialog.show();
+        return mMaterialDialog;
     }
 }

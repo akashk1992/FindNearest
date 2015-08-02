@@ -1,4 +1,4 @@
-package ask.piyush.findnearest.activity;
+package ask.piyush.findnearest.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -58,7 +58,7 @@ public class TravelModeAdapter extends BaseAdapter {
                 break;
             case 1:
                 viewHolder.textView.setText("Walking");
-               viewHolder.imageView.setImageResource(R.drawable.walking1);
+                viewHolder.imageView.setImageResource(R.drawable.walking1);
                 break;
            /* case 2:
                 viewHolder.textView.setText("Bicycling");

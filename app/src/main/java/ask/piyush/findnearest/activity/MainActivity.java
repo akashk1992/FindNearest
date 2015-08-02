@@ -70,6 +70,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ask.piyush.findnearest.R;
+import ask.piyush.findnearest.adapter.TravelModeAdapter;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
@@ -79,6 +80,7 @@ import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.VolleySingleton;
+import me.drakeet.materialdialog.MaterialDialog;
 
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
@@ -112,7 +114,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private GlassActionBarHelper helper;
     private final String TRAVE_MODE_TAG = "travelmode";
     private final String RADIUS_TAG = "radius";
+    private final String MAP_TYPE_TAG = "maptype";
     private FloatingActionMenu floatingActionMenu;
+    private MaterialDialog mapTypeAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,24 +153,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 .setContentView(iconMainActionBtn)
                 .setBackgroundDrawable(R.drawable.action_button_selector)
                 .build();
+
         ImageView iconRadius = new ImageView(this); // Create an icon
         iconRadius.setImageDrawable(getResources().getDrawable(R.drawable.radius55));
         ImageView iconTravelMode = new ImageView(this); // Create an icon
         iconTravelMode.setImageDrawable(getResources().getDrawable(R.drawable.travelmodes));
+        ImageView iconMapType = new ImageView(this); // Create an icon
+        iconMapType.setImageDrawable(getResources().getDrawable(R.drawable.me));
 
         SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
         SubActionButton menuRadius = itemBuilder.setContentView(iconRadius).build();
         SubActionButton menuTravelMode = itemBuilder.setContentView(iconTravelMode).build();
+        SubActionButton menuMapType = itemBuilder.setContentView(iconMapType).build();
 
         menuRadius.setTag(RADIUS_TAG);
         menuTravelMode.setTag(TRAVE_MODE_TAG);
+        menuMapType.setTag(MAP_TYPE_TAG);
 
         menuRadius.setOnClickListener(this);
         menuTravelMode.setOnClickListener(this);
+        menuMapType.setOnClickListener(this);
 
         floatingActionMenu = new FloatingActionMenu.Builder(this)
                 .addSubActionView(menuRadius)
                 .addSubActionView(menuTravelMode)
+                .addSubActionView(menuMapType)
                 .attachTo(mainActionButton)
                 .build();
         floatingActionMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
@@ -320,10 +331,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = drawerLayout.isDrawerOpen(mDrawerList);
 //        menu.findItem(R.id.setting_string).setVisible(!drawerOpen);
-//        menu.findItem(R.id.start).setVisible(!drawerOpen);
-//        menu.findItem(R.id.stop).setVisible(!drawerOpen);
-//        menu.findItem(R.id.radius).setVisible(!drawerOpen);
-//        menu.findItem(R.id.travel_mode).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -331,65 +338,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
       /*if (id == R.id.setting_string) {
             return true;
-        }
-        if (id == R.id.start) {
-            LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
-            return true;
-        }
-        if (id == R.id.stop) {
-            LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
-            return true;
-        }*/
-       /* if (id == R.id.radius) {
-            alertDialogRadius = new AlertDiaologNifty();
-            alertDialogRadius.materialDialogForRadius(this, "");
-            return true;
-        }
-        if (id == R.id.travel_mode) {
-            OnItemClickListener itemClickListener = new OnItemClickListener() {
-                @Override
-                public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                    TextView textView = (TextView) view.findViewById(R.id.text_view);
-                    String selectedMode = textView.getText().toString();
-                    dialog.dismiss();
-//                    Toast.makeText(context, clickedAppName + " clicked", Toast.LENGTH_LONG).show();
-                    mode = selectedMode;
-                    if (placesResponse != null)
-                        createPolylineToNearest(nearestPlaceIndex, placesResponse);
-                    else {
-                        //alert to choose place category first
-                        AlertDiaologNifty alert = new AlertDiaologNifty();
-//                        alert.dialogShow(MainActivity.this, getString(R.string.select_place_alert));
-                        alert.matrialDialog(MainActivity.this, getString(R.string.select_place_alert));
-                    }
-                }
-            };
-            TravelModeAdapter adapter = new TravelModeAdapter(context);
-            showOnlyContentDialog(new ListHolder(), Gravity.TOP, adapter, itemClickListener);
-            return true;
         }*/
         return super.onOptionsItemSelected(item);
-    }
-
-    private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,
-                                       OnItemClickListener itemClickListener) {
-        final DialogPlus dialog = new DialogPlus.Builder(this)
-                .setContentHolder(holder)
-                .setGravity(gravity)
-                .setAdapter(adapter)
-                .setOnItemClickListener(itemClickListener)
-                .setExpanded(false)
-                .setCancelable(true)
-                .create();
-        dialog.show();
     }
 
     @Override
@@ -637,12 +593,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onClick(View v) {
         if (v.getTag().equals(RADIUS_TAG)) {
-            Log.d("test", "radisu tag clicked.");
+            floatingActionMenu.close(true);
             alertDialogRadius = new AlertDiaologNifty();
             alertDialogRadius.materialDialogForRadius(this, "");
         } else if (v.getTag().equals(TRAVE_MODE_TAG)) {
-            Log.d("test", "travel mode tag clicked.");
-
+            floatingActionMenu.close(true);
             OnItemClickListener itemClickListener = new OnItemClickListener() {
                 @Override
                 public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
@@ -663,7 +618,30 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             };
             TravelModeAdapter adapter = new TravelModeAdapter(context);
             showOnlyContentDialog(new ListHolder(), Gravity.TOP, adapter, itemClickListener);
+        } else if (v.getTag().equals(MAP_TYPE_TAG)) {
+            Log.d("test", "map type tag clicked");
+            floatingActionMenu.close(true);
+            if (mMap != null) {
+                mapTypeAlert = new AlertDiaologNifty().materialDialogMapTypes(MainActivity.this);
+            }
+        } else if (v.getTag().equals("akash")) {
+            Log.d("test", "map type chosen");
+            mapTypeAlert.dismiss();
         }
+    }
+
+
+    private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,
+                                       OnItemClickListener itemClickListener) {
+        final DialogPlus dialog = new DialogPlus.Builder(this)
+                .setContentHolder(holder)
+                .setGravity(gravity)
+                .setAdapter(adapter)
+                .setOnItemClickListener(itemClickListener)
+                .setExpanded(false)
+                .setCancelable(true)
+                .create();
+        dialog.show();
     }
 
     private class CustomeDrawerListAdapter extends BaseAdapter {
