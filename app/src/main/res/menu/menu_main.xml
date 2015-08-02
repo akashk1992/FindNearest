@@ -17,7 +17,7 @@
         android:title="stop"
         android:orderInCategory="100"
         app:showAsAction="never" />-->
-    <item
+    <!--<item
         android:id="@+id/radius"
         android:title="Radius"
         android:orderInCategory="100"
@@ -26,5 +26,5 @@
         android:id="@+id/travel_mode"
         android:title="Travel Mode"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 </menu>

@@ -1,7 +1,6 @@
 package ask.piyush.findnearest.activity;
 
 import android.annotation.SuppressLint;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -10,7 +9,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
@@ -23,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -70,7 +70,6 @@ import java.util.Collections;
 import java.util.List;
 
 import ask.piyush.findnearest.R;
-import ask.piyush.findnearest.fragments.MapFragment;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
@@ -84,7 +83,7 @@ import ask.piyush.findnearest.utils.VolleySingleton;
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
     public static GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
@@ -111,7 +110,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int radius;
     private AlertDiaologNifty alertDialogRadius;
     private GlassActionBarHelper helper;
-    private int statusBarColor;
+    private final String TRAVE_MODE_TAG = "travelmode";
+    private final String RADIUS_TAG = "radius";
+    private FloatingActionMenu floatingActionMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,43 +142,45 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void setUpFab() {
-        ImageView icon = new ImageView(this); // Create an icon
-        icon.setImageDrawable(getResources().getDrawable(R.drawable.fab));
+        final Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        final ImageView iconMainActionBtn = new ImageView(this); // Create an icon
+        iconMainActionBtn.setImageDrawable(getResources().getDrawable(R.drawable.options100));
         FloatingActionButton mainActionButton = new FloatingActionButton.Builder(this)
-                .setContentView(icon)
+                .setContentView(iconMainActionBtn)
+                .setBackgroundDrawable(R.drawable.action_button_selector)
                 .build();
-        ImageView iconMenu1 = new ImageView(this); // Create an icon
-        iconMenu1.setImageDrawable(getResources().getDrawable(R.drawable.laundary32));
-        ImageView iconMenu2 = new ImageView(this); // Create an icon
-        iconMenu2.setImageDrawable(getResources().getDrawable(R.drawable.atm32));
-        ImageView iconMenu3 = new ImageView(this); // Create an icon
-        iconMenu3.setImageDrawable(getResources().getDrawable(R.drawable.restaurant32));
+        ImageView iconRadius = new ImageView(this); // Create an icon
+        iconRadius.setImageDrawable(getResources().getDrawable(R.drawable.radius55));
+        ImageView iconTravelMode = new ImageView(this); // Create an icon
+        iconTravelMode.setImageDrawable(getResources().getDrawable(R.drawable.travelmodes));
 
         SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
-        SubActionButton menu1 = itemBuilder.setContentView(iconMenu1).build();
-        SubActionButton menu2 = itemBuilder.setContentView(iconMenu2).build();
-        SubActionButton menu3 = itemBuilder.setContentView(iconMenu3).build();
+        SubActionButton menuRadius = itemBuilder.setContentView(iconRadius).build();
+        SubActionButton menuTravelMode = itemBuilder.setContentView(iconTravelMode).build();
 
-        FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(this)
-                .addSubActionView(menu1)
-                .addSubActionView(menu2)
-                .addSubActionView(menu3)
+        menuRadius.setTag(RADIUS_TAG);
+        menuTravelMode.setTag(TRAVE_MODE_TAG);
+
+        menuRadius.setOnClickListener(this);
+        menuTravelMode.setOnClickListener(this);
+
+        floatingActionMenu = new FloatingActionMenu.Builder(this)
+                .addSubActionView(menuRadius)
+                .addSubActionView(menuTravelMode)
                 .attachTo(mainActionButton)
                 .build();
+        floatingActionMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
+            @Override
+            public void onMenuOpened(FloatingActionMenu floatingActionMenu) {
+                iconMainActionBtn.startAnimation(animation);
+                if (drawerLayout.isDrawerOpen(mDrawerList)) drawerLayout.closeDrawer(mDrawerList);
+            }
 
-    }
-
-    private int getStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return getWindow().getStatusBarColor();
-        }
-        return 0;
-    }
-
-    private void setStatusBarColor(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(color);
-        }
+            @Override
+            public void onMenuClosed(FloatingActionMenu floatingActionMenu) {
+                iconMainActionBtn.clearAnimation();
+            }
+        });
     }
 
     private boolean checkPlayServices() {
@@ -279,10 +282,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             actionBar.setHomeButtonEnabled(true);
 
         }
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                if (floatingActionMenu != null && floatingActionMenu.isOpen()) {
+                    floatingActionMenu.close(true);
+                }
                 actionBar.setTitle("Places");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
@@ -312,8 +322,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //        menu.findItem(R.id.setting_string).setVisible(!drawerOpen);
 //        menu.findItem(R.id.start).setVisible(!drawerOpen);
 //        menu.findItem(R.id.stop).setVisible(!drawerOpen);
-        menu.findItem(R.id.radius).setVisible(!drawerOpen);
-        menu.findItem(R.id.travel_mode).setVisible(!drawerOpen);
+//        menu.findItem(R.id.radius).setVisible(!drawerOpen);
+//        menu.findItem(R.id.travel_mode).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -338,9 +348,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
             return true;
         }*/
-        if (id == R.id.radius) {
+       /* if (id == R.id.radius) {
             alertDialogRadius = new AlertDiaologNifty();
-//            alertDialogRadius.dialogShow(this, "", R.layout.custom_alert_view);
             alertDialogRadius.materialDialogForRadius(this, "");
             return true;
         }
@@ -364,9 +373,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
             };
             TravelModeAdapter adapter = new TravelModeAdapter(context);
-            showOnlyContentDialog(new ListHolder(), Gravity.BOTTOM, adapter, itemClickListener);
+            showOnlyContentDialog(new ListHolder(), Gravity.TOP, adapter, itemClickListener);
             return true;
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -623,6 +632,38 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("test", "" + connectionResult);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getTag().equals(RADIUS_TAG)) {
+            Log.d("test", "radisu tag clicked.");
+            alertDialogRadius = new AlertDiaologNifty();
+            alertDialogRadius.materialDialogForRadius(this, "");
+        } else if (v.getTag().equals(TRAVE_MODE_TAG)) {
+            Log.d("test", "travel mode tag clicked.");
+
+            OnItemClickListener itemClickListener = new OnItemClickListener() {
+                @Override
+                public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                    TextView textView = (TextView) view.findViewById(R.id.text_view);
+                    String selectedMode = textView.getText().toString();
+                    dialog.dismiss();
+//                    Toast.makeText(context, clickedAppName + " clicked", Toast.LENGTH_LONG).show();
+                    mode = selectedMode;
+                    if (placesResponse != null)
+                        createPolylineToNearest(nearestPlaceIndex, placesResponse);
+                    else {
+                        //alert to choose place category first
+                        AlertDiaologNifty alert = new AlertDiaologNifty();
+//                        alert.dialogShow(MainActivity.this, getString(R.string.select_place_alert));
+                        alert.matrialDialog(MainActivity.this, getString(R.string.select_place_alert));
+                    }
+                }
+            };
+            TravelModeAdapter adapter = new TravelModeAdapter(context);
+            showOnlyContentDialog(new ListHolder(), Gravity.TOP, adapter, itemClickListener);
+        }
     }
 
     private class CustomeDrawerListAdapter extends BaseAdapter {
