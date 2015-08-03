@@ -80,6 +80,7 @@ import ask.piyush.findnearest.model.direction.RoutElement;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
 import ask.piyush.findnearest.utils.LoadingBar;
+import ask.piyush.findnearest.utils.PlacesInfoWindowAdapter;
 import ask.piyush.findnearest.utils.VolleySingleton;
 
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
@@ -419,12 +420,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 lat = placesResponse.get(index).getGeometry().getLocation().getLat();
                                 lng = placesResponse.get(index).getGeometry().getLocation().getLng();
                                 distances.add(SphericalUtil.computeDistanceBetween(new LatLng(lat, lng), new LatLng(currentLatitude, currentLongitude)));
-                                clusterItems.add(new MyItem(lat, lng, mNavIcons[position], placesResponse.get(index).getName()));
+                                clusterItems.add(new MyItem(lat, lng, mNavIcons[position], placesResponse.get(index)));
                             }
                             ArrayList<Double> distBeforeSort = new ArrayList(distances);
                             Collections.sort(distances);
                             nearestPlaceIndex = distBeforeSort.indexOf(distances.get(0));
-                            addPlacesToCluster(clusterItems, position);
+                            addPlacesToCluster(clusterItems);
                             Log.d("test", "distBeforeSort: " + distBeforeSort.size());
                             Log.d("test", "distances: " + distances.size());
                             distBeforeSort = null;
@@ -500,10 +501,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         polylineList.add(polyline);
     }
 
-    private void addPlacesToCluster(List<MyItem> list, int position) {
+    private void addPlacesToCluster(List<MyItem> list) {
         mClusterManager.clearItems();
         mClusterManager.addItems(list);
-        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager, placesResponse));
+        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager));
+        mMap.setInfoWindowAdapter(new PlacesInfoWindowAdapter(context));
         mClusterManager.cluster();
     }
 

@@ -16,10 +16,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
-import java.util.List;
-
 import ask.piyush.findnearest.R;
-import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.FindNearestApp;
 
 /**
@@ -27,7 +24,6 @@ import ask.piyush.findnearest.utils.FindNearestApp;
  */
 public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> implements ClusterManager.OnClusterItemClickListener<MyItem>, ClusterManager.OnClusterClickListener<MyItem>, ClusterManager.OnClusterInfoWindowClickListener<MyItem>, ClusterManager.OnClusterItemInfoWindowClickListener<MyItem> {
 
-    private final List<Result> placesResponse;
     private final ClusterManager<MyItem> clusterManager;
     private final ImageView mClusterItemIcon;
     private ImageView mImageView;
@@ -36,10 +32,9 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     private int mDimension;
     final IconGenerator mIconGenerator = new IconGenerator(FindNearestApp.getContext());
 
-    public CustomeClusterRendered(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager, List<Result> placesResponse) {
+    public CustomeClusterRendered(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager) {
         super(context, map, clusterManager);
         this.mNavIcon = mNavIcon;
-        this.placesResponse = placesResponse;
         this.clusterManager = clusterManager;
 //        final IconGenerator mClusterIconGenerator = new IconGenerator(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -58,14 +53,16 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
     @Override
     protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions);
-        mClusterItemIcon.setImageResource(item.clusterIcon);
-        Bitmap icon = mIconGenerator.makeIcon();
-//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.placeName);
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(item.clusterIcon)).title(item.placeName);
-        clusterManager.setOnClusterItemClickListener(this);
-        clusterManager.setOnClusterClickListener(this);
-        clusterManager.setOnClusterInfoWindowClickListener(this);
-        clusterManager.setOnClusterItemInfoWindowClickListener(this);
+        if (item != null) {
+            mClusterItemIcon.setImageResource(item.clusterIcon);
+            Bitmap icon = mIconGenerator.makeIcon();
+            String placeStatus;
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(item.clusterIcon)).title(item.placeDetails.getName());
+            clusterManager.setOnClusterItemClickListener(this);
+            clusterManager.setOnClusterClickListener(this);
+            clusterManager.setOnClusterInfoWindowClickListener(this);
+            clusterManager.setOnClusterItemInfoWindowClickListener(this);
+        }
     }
 
     @Override
@@ -75,7 +72,7 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
 
     @Override
     public boolean onClusterItemClick(MyItem myItem) {
-        Log.d("test", "cluster item clicked" + myItem.placeName);
+        Log.d("test", "cluster item clicked" + myItem.placeDetails);
         return false;
     }
 
@@ -93,7 +90,7 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
 
     @Override
     public void onClusterItemInfoWindowClick(MyItem myItem) {
-        Log.d("test", "onClusterItemInfoWindowClick" + myItem.placeName);
-//        mClusterItemText.setText(myItem.placeName);
+        Log.d("test", "onClusterItemInfoWindowClick" + myItem.placeDetails);
+//        mClusterItemText.setText(myItem.placeDetails);
     }
 }
