@@ -190,13 +190,9 @@ public class AlertDiaologNifty {
         normalMapView.setTag("normalview");
         satelliteView.setOnClickListener(context);
         normalMapView.setOnClickListener(context);
-        PopupWindow popupWindow = new PopupWindow(view, 295, 500, true);
+        PopupWindow popupWindow = new PopupWindow(view, 295, 440, true);
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
         popupWindow.setAnimationStyle(R.anim.abc_slide_in_top);
-        /*final MaterialDialog mMaterialDialog = new MaterialDialog(context);
-        mMaterialDialog.setCanceledOnTouchOutside(true)
-                .setContentView(view);
-        mMaterialDialog.show();*/
         return popupWindow;
     }
 }

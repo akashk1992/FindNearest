@@ -81,7 +81,6 @@ import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.VolleySingleton;
-import me.drakeet.materialdialog.MaterialDialog;
 
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
@@ -612,7 +611,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     else {
                         //alert to choose place category first
                         AlertDiaologNifty alert = new AlertDiaologNifty();
-//                        alert.dialogShow(MainActivity.this, getString(R.string.select_place_alert));
                         alert.matrialDialog(MainActivity.this, getString(R.string.select_place_alert));
                     }
                 }
@@ -621,14 +619,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             showOnlyContentDialog(new ListHolder(), Gravity.TOP, adapter, itemClickListener);
         } else if (v.getTag().equals(MAP_TYPE_TAG)) {
             floatingActionMenu.close(true);
+            progressWheelLayout.setAlpha(0.6f);
             if (mMap != null) {
                 mapTypeAlert = new AlertDiaologNifty().materialDialogMapTypes(MainActivity.this);
             }
         } else if (v.getTag().equals("normalview")) {
             if (mMap != null) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            progressWheelLayout.setAlpha(0);
             mapTypeAlert.dismiss();
         } else if (v.getTag().equals("satelliteview")) {
             if (mMap != null) mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            progressWheelLayout.setAlpha(0);
             mapTypeAlert.dismiss();
         }
     }
