@@ -17,6 +17,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
 import ask.piyush.findnearest.R;
+import ask.piyush.findnearest.model.places.OpeningHours;
 import ask.piyush.findnearest.utils.FindNearestApp;
 
 /**
@@ -57,7 +58,12 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
             mClusterItemIcon.setImageResource(item.clusterIcon);
             Bitmap icon = mIconGenerator.makeIcon();
             String placeStatus;
+            OpeningHours openingHours = item.placeDetails.getOpeningHours();
             markerOptions.icon(BitmapDescriptorFactory.fromResource(item.clusterIcon)).title(item.placeDetails.getName());
+            if (openingHours != null) {
+                placeStatus = openingHours.getOpenNow() ? "Open" : "Close";
+                markerOptions.snippet("Status: Now " + placeStatus);
+            }
             clusterManager.setOnClusterItemClickListener(this);
             clusterManager.setOnClusterClickListener(this);
             clusterManager.setOnClusterInfoWindowClickListener(this);

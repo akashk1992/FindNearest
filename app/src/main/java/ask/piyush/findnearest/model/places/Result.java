@@ -1,5 +1,7 @@
 package ask.piyush.findnearest.model.places;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ public class Result {
     private String icon;
     private String id;
     private String name;
+    @SerializedName("opening_hours")
     private OpeningHours openingHours;
     private String placeId;
     private String reference;
@@ -171,4 +174,20 @@ public class Result {
         this.photos = photos;
     }
 
+    @Override
+    public String toString() {
+        return "Result{" +
+                "geometry=" + geometry +
+                ", icon='" + icon + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", openingHours=" + openingHours +
+                ", placeId='" + placeId + '\'' +
+                ", reference='" + reference + '\'' +
+                ", scope='" + scope + '\'' +
+                ", types=" + types +
+                ", vicinity='" + vicinity + '\'' +
+                ", photos=" + photos +
+                '}';
+    }
 }

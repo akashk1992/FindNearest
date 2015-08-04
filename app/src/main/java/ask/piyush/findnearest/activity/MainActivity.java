@@ -397,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mMap.setOnMarkerClickListener(mClusterManager);
     }
 
-    private void webServiceapiCall(String placesWebServiceUrl, final int position) {
+    private void webServiceapiCall(final String placesWebServiceUrl, final int position) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 placesWebServiceUrl, "",
                 new Response.Listener<JSONObject>() {

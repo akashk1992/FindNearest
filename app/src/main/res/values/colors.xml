@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="app_color">#009688</color>
+    <color name="purplle">#964396</color>
     <color name="theme_primary">#00BCD4</color>
     <color name="theme_primary_dark">#0097A7</color>
     <color name="theme_primary_dark2">#006064</color>
@@ -18,11 +20,9 @@
         <item>#607D8B</item>
     </array>
 
-    <array name="note_accent_colors">
-        <item>#039BE5</item>
-        <item>#3D51B3</item>
-        <item>#689f38</item>
-        <item>#FD7044</item>
-    </array>
+    <color name="light">#039BE5</color>
+    <color name="dark">#3D51B3</color>
+    <color name="green">#3D51B3</color>
+    <color name="orange">#FD7044</color>
 
 </resources>

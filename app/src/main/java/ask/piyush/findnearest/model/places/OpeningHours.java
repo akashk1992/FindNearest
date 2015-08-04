@@ -1,10 +1,13 @@
 package ask.piyush.findnearest.model.places;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class OpeningHours {
 
+    @SerializedName("open_now")
     private Boolean openNow;
     private List<Object> weekdayText = new ArrayList<Object>();
 
@@ -36,4 +39,11 @@ public class OpeningHours {
         this.weekdayText = weekdayText;
     }
 
+    @Override
+    public String toString() {
+        return "OpeningHours{" +
+                "openNow=" + openNow +
+                ", weekdayText=" + weekdayText +
+                '}';
+    }
 }

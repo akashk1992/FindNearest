@@ -1,9 +1,11 @@
 package ask.piyush.findnearest.utils;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -27,11 +29,17 @@ public class PlacesInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     @Override
-    public View getInfoContents(Marker marker) {
+    public View getInfoContents(final Marker marker) {
         View view = layoutInflater.inflate(R.layout.info_window, null);
         TextView placeName = (TextView) view.findViewById(R.id.place_name);
         TextView placeStatus = (TextView) view.findViewById(R.id.place_status);
+        ImageView thisWay = (ImageView) view.findViewById(R.id.this_way);
+        placeName.setTypeface(Typeface.createFromAsset(FindNearestApp.getContext().getAssets(), "font/RobotoCondensed-LightItalic.ttf"));
+        placeStatus.setTypeface(Typeface.createFromAsset(FindNearestApp.getContext().getAssets(), "font/Roboto-ThinItalic.ttf"));
+        placeName.setText(marker.getTitle());
+        placeStatus.setText(marker.getSnippet());
         Log.d("test", "tit: " + marker.getTitle());
+        Log.d("test", "this way: " + marker.getPosition());
         Log.d("test", "snipt: " + marker.getSnippet());
         return view;
     }
