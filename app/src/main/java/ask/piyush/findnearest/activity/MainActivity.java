@@ -3,7 +3,6 @@ package ask.piyush.findnearest.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
@@ -48,6 +47,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -61,7 +61,9 @@ import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.Holder;
 import com.orhanobut.dialogplus.ListHolder;
+import com.orhanobut.dialogplus.OnClickListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.orhanobut.dialogplus.ViewHolder;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.json.JSONObject;
@@ -86,7 +88,7 @@ import ask.piyush.findnearest.utils.VolleySingleton;
 import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
 
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener, GoogleMap.OnInfoWindowClickListener {
     public static GoogleApiClient mGoogleApiClient;
     private String mActivityTitle;
     private DrawerLayout drawerLayout;
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private final String MAP_TYPE_TAG = "maptype";
     private FloatingActionMenu floatingActionMenu;
     private PopupWindow mapTypeAlert;
+    private DirectionResponse directionResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -473,7 +476,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("test", "path: " + response);
-                        DirectionResponse directionResponse = new PojoMapping().getResponse(response.toString());
+                        directionResponse = new PojoMapping().getResponse(response.toString());
                         RoutElement[] routElements = directionResponse.getRoutes();
                         String status = directionResponse.getStatus();
                         if (status.equalsIgnoreCase("OK")) {
@@ -497,7 +500,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void direction(String points) {
         List<LatLng> decodedPath = PolyUtil.decode(points);
-        Polyline polyline = mMap.addPolyline(new PolylineOptions().color(Color.parseColor("#009688")).addAll(decodedPath));
+        int polylineColor;
+        if (mode.equalsIgnoreCase("Driving"))
+            polylineColor = getResources().getColor(R.color.app_color);
+        else polylineColor = getResources().getColor(R.color.orange);
+        Polyline polyline = mMap.addPolyline(new PolylineOptions().color(polylineColor).addAll(decodedPath));
         polylineList.add(polyline);
     }
 
@@ -506,6 +513,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mClusterManager.addItems(list);
         mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager));
         mMap.setInfoWindowAdapter(new PlacesInfoWindowAdapter(context));
+        mMap.setOnInfoWindowClickListener(this);
         mClusterManager.cluster();
     }
 
@@ -636,7 +644,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-
     private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,
                                        OnItemClickListener itemClickListener) {
         final DialogPlus dialog = new DialogPlus.Builder(this)
@@ -646,6 +653,41 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 .setOnItemClickListener(itemClickListener)
                 .setExpanded(false)
                 .setCancelable(true)
+                .create();
+        dialog.show();
+    }
+
+    @Override
+    public void onInfoWindowClick(final Marker marker) {
+        ViewHolder holder = new ViewHolder(R.layout.content);
+        OnClickListener clickListener = new OnClickListener() {
+            @Override
+            public void onClick(DialogPlus dialog, View view) {
+                switch (view.getId()) {
+                    case R.id.yes_button:
+                        LatLng latLng = marker.getPosition();
+                        if (polylineList != null) {
+                            for (Polyline polyline : polylineList)
+                                polyline.remove();
+                        }
+                        webServiceCallForActualPath(latLng.latitude, latLng.longitude);
+                        break;
+                    case R.id.no_button:
+                        break;
+                }
+                dialog.dismiss();
+            }
+        };
+        showNoFooterDialog(holder, Gravity.BOTTOM, clickListener);
+
+    }
+
+    private void showNoFooterDialog(Holder holder, int gravity, OnClickListener clickListener) {
+        final DialogPlus dialog = new DialogPlus.Builder(this)
+                .setContentHolder(holder)
+                .setCancelable(false)
+                .setGravity(gravity)
+                .setOnClickListener(clickListener)
                 .create();
         dialog.show();
     }

@@ -7,9 +7,10 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:src="@drawable/thisway"
         android:layout_weight="1"
+        android:adjustViewBounds="true"
         android:id="@+id/this_way" />
 
     <LinearLayout
@@ -24,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Title"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@color/app_color"
             android:id="@+id/place_name" />
@@ -33,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="snippet"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textColor="@color/purplle"
             android:id="@+id/place_status" />
 
