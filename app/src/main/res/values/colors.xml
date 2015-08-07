@@ -20,9 +20,8 @@
         <item>#607D8B</item>
     </array>
 
-    <color name="light">#039BE5</color>
+    <color name="light_blue">#039BE5</color>
     <color name="dark">#3D51B3</color>
-    <color name="green">#3D51B3</color>
     <color name="orange">#FD7044</color>
 
 </resources>

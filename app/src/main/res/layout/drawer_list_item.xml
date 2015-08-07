@@ -7,15 +7,16 @@
     android:paddingBottom="5dp"
     android:paddingTop="5dp"
     android:paddingLeft="20dp"
+    android:background="@drawable/drawer_item_selector"
     android:gravity="center">
 
-    <ImageView
+    <!--<ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="place icon"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:id="@+id/drawer_list_icon" />
+        android:id="@+id/drawer_list_icon" />-->
 
     <TextView
         android:layout_width="match_parent"
@@ -23,6 +24,7 @@
         android:id="@+id/drawer_list_text"
         android:textColor="@android:color/black"
         android:paddingTop="20dp"
+        android:drawablePadding="16dp"
         android:paddingBottom="20dp"
         android:textSize="16sp"
         android:paddingLeft="16dp" />

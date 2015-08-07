@@ -40,6 +40,5 @@
         android:choiceMode="singleChoice"
         android:dividerHeight="1.5dp"
         android:divider="@android:color/black"
-        android:background="@android:color/white"
         android:scrollbars="none" />
 </android.support.v4.widget.DrawerLayout>

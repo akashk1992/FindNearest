@@ -370,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 // 1) select item
 // 2) update title(call @overriden setTitle() method)
 // 3) close Drawer
+        view.setSelected(true);
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
         String selectedDrawerItem = drawerListText.getText().toString();
@@ -723,8 +724,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
             View rootView = inflater.inflate(R.layout.drawer_list_item, parent, false);
             TextView listText = (TextView) rootView.findViewById(R.id.drawer_list_text);
-            ImageView listIcon = (ImageView) rootView.findViewById(R.id.drawer_list_icon);
-            listIcon.setBackground(getResources().getDrawable(mIcons[position]));
+//            ImageView listIcon = (ImageView) rootView.findViewById(R.id.drawer_list_icon);
+            listText.setCompoundDrawablesWithIntrinsicBounds(mIcons[position], 0, 0, 0);
+//            listIcon.setBackground(getResources().getDrawable(mIcons[position]));
             listText.setTypeface(Typeface.createFromAsset(getAssets(), "font/RobotoCondensed-Regular.ttf"));
             listText.setText(mTitles[position]);
             return rootView;
