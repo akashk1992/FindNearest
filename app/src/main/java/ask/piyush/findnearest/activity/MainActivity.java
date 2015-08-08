@@ -660,7 +660,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onInfoWindowClick(final Marker marker) {
-        ViewHolder holder = new ViewHolder(R.layout.content);
+        floatingActionMenu.close(true);
+        ViewHolder holder = new ViewHolder(R.layout.directiion_alert);
         OnClickListener clickListener = new OnClickListener() {
             @Override
             public void onClick(DialogPlus dialog, View view) {

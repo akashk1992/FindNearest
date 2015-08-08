@@ -21,26 +21,36 @@
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingTop="0dp"
+        android:layout_marginTop="5dp"
         android:paddingRight="16dp"
-        android:paddingBottom="16dp">
+        android:paddingBottom="12dp">
 
-        <Button
+        <TextView
             android:id="@+id/yes_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Yes"
-            android:textColor="@color/black_overlay"
-            android:textSize="12sp" />
+            android:paddingTop="15dp"
+            android:gravity="center"
+            android:paddingBottom="15dp"
+            android:background="#5CB85C"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
 
-        <Button
+        <TextView
             android:id="@+id/no_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
+            android:background="#D9534F"
+            android:paddingTop="15dp"
+            android:layout_marginLeft="6dp"
+            android:paddingBottom="15dp"
             android:text="No"
-            android:textColor="@color/black_overlay"
-            android:textSize="12sp" />
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
     </LinearLayout>
 
 </LinearLayout>
