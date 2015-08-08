@@ -2,6 +2,7 @@ package ask.piyush.findnearest.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.location.Location;
@@ -121,18 +122,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private FloatingActionMenu floatingActionMenu;
     private PopupWindow mapTypeAlert;
     private DirectionResponse directionResponse;
+    SharedPreferences first_time = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+        first_time = getSharedPreferences("find_nearest_first_time", 0);
+        findViewById(R.id.got_it).setOnClickListener(this);
+        findViewById(R.id.got_it).setTag("gotIt");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
         setUpFab();
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         setUpNavigationDrawer();
+        findViewById(R.id.lockScreenLayout).setVisibility(View.VISIBLE);
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         if (checkPlayServices()) {
@@ -157,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 .setContentView(iconMainActionBtn)
                 .setBackgroundDrawable(R.drawable.action_button_selector)
                 .build();
-
         ImageView iconRadius = new ImageView(this); // Create an icon
         iconRadius.setImageDrawable(getResources().getDrawable(R.drawable.radius55));
         ImageView iconTravelMode = new ImageView(this); // Create an icon
@@ -356,6 +361,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setUpMapIfNeeded();
+        if (first_time.getBoolean("first_run", true)) {
+            findViewById(R.id.lockScreenLayout).setVisibility(View.VISIBLE);
+            first_time.edit().putBoolean("first_run", false).commit();
+        }
         mDrawerToggle.syncState();
     }
 
@@ -642,7 +651,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (mMap != null) mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             progressWheelLayout.setAlpha(0);
             mapTypeAlert.dismiss();
+        } else if (v.getTag().equals("gotIt")) {
+            findViewById(R.id.lockScreenLayout).setVisibility(View.GONE);
         }
+
     }
 
     private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,
