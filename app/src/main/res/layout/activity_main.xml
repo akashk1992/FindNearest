@@ -49,27 +49,10 @@
         android:visibility="gone"
         android:alpha="0.6">
 
-        <RelativeLayout
+        <ImageView
+            android:id="@+id/tutorial_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
-            android:alpha="1">
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Got It!"
-                android:textSize="25sp"
-                android:id="@+id/got_it"
-                android:visibility="visible"
-                android:alpha="1"
-                android:layout_centerInParent="true" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/foto" />
-        </RelativeLayout>
+            android:background="@drawable/foto" />
     </FrameLayout>
 </android.support.v4.widget.DrawerLayout>

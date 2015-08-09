@@ -130,15 +130,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
         first_time = getSharedPreferences("find_nearest_first_time", 0);
-        findViewById(R.id.got_it).setOnClickListener(this);
-        findViewById(R.id.got_it).setTag("gotIt");
+        findViewById(R.id.tutorial_image).setOnClickListener(this);
+        findViewById(R.id.tutorial_image).setTag("tutorial");
+        findViewById(R.id.lockScreenLayout).setVisibility(View.GONE);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
         setUpFab();
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         setUpNavigationDrawer();
-        findViewById(R.id.lockScreenLayout).setVisibility(View.VISIBLE);
         /********check GPS Status*************/
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         if (checkPlayServices()) {
@@ -651,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (mMap != null) mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             progressWheelLayout.setAlpha(0);
             mapTypeAlert.dismiss();
-        } else if (v.getTag().equals("gotIt")) {
+        } else if (v.getTag().equals("tutorial")) {
             findViewById(R.id.lockScreenLayout).setVisibility(View.GONE);
         }
 
