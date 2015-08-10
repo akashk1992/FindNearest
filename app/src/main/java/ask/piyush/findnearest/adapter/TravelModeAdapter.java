@@ -15,10 +15,12 @@ import ask.piyush.findnearest.R;
  */
 public class TravelModeAdapter extends BaseAdapter {
 
+    private final Context context;
     private LayoutInflater layoutInflater;
 
     public TravelModeAdapter(Context context) {
-        layoutInflater = LayoutInflater.from(context);
+        this.context = context;
+        this.layoutInflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -54,10 +56,12 @@ public class TravelModeAdapter extends BaseAdapter {
         switch (position) {
             case 0:
                 viewHolder.textView.setText("Driving");
+                viewHolder.textView.setTextColor(context.getResources().getColor(R.color.app_color));
                 viewHolder.imageView.setImageResource(R.drawable.icon_steering1);
                 break;
             case 1:
                 viewHolder.textView.setText("Walking");
+                viewHolder.textView.setTextColor(context.getResources().getColor(R.color.orange));
                 viewHolder.imageView.setImageResource(R.drawable.walking1);
                 break;
            /* case 2:

@@ -54,4 +54,5 @@ dependencies {
     compile 'com.github.manuelpeinado.glassactionbar:glassactionbar-abc:0.3.0'
     compile 'com.android.support:design:22.2.1'
     compile 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
+    compile 'com.github.satyan:sugar:1.3'
 }

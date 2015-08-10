@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -55,7 +54,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
-import com.manuelpeinado.glassactionbar.GlassActionBarHelper;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
@@ -76,18 +74,17 @@ import java.util.List;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.adapter.TravelModeAdapter;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
+import ask.piyush.findnearest.helper.FirstTimeUser;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.RoutElement;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.AlertDiaologNifty;
+import ask.piyush.findnearest.utils.CustomToast;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.PlacesInfoWindowAdapter;
 import ask.piyush.findnearest.utils.VolleySingleton;
-
-import static ask.piyush.findnearest.utils.FindNearestApp.getContext;
-
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener, GoogleMap.OnInfoWindowClickListener {
     public static GoogleApiClient mGoogleApiClient;
@@ -115,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private float zoomLevel = 2.0f;
     private int radius;
     private AlertDiaologNifty alertDialogRadius;
-    private GlassActionBarHelper helper;
     private final String TRAVE_MODE_TAG = "travelmode";
     private final String RADIUS_TAG = "radius";
     private final String MAP_TYPE_TAG = "maptype";
@@ -129,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+        FirstTimeUser firstTimeUser = new FirstTimeUser(true);
+        firstTimeUser.save();
         first_time = getSharedPreferences("find_nearest_first_time", 0);
         findViewById(R.id.tutorial_image).setOnClickListener(this);
         findViewById(R.id.tutorial_image).setTag("tutorial");
@@ -204,13 +202,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getContext());
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1000).show();
             } else {
-                Toast.makeText(getContext(), getString(R.string.device_not_supported), Toast.LENGTH_LONG)
-                        .show();
+                new CustomToast(context).makeText(getString(R.string.device_not_supported));
             }
             return false;
         }
@@ -361,6 +358,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setUpMapIfNeeded();
+        FirstTimeUser firstTimeUser1 = FirstTimeUser.findById(FirstTimeUser.class, (long) 1);
+        Log.d("tut", "" + firstTimeUser1);
         if (first_time.getBoolean("first_run", true)) {
             findViewById(R.id.lockScreenLayout).setVisibility(View.VISIBLE);
             first_time.edit().putBoolean("first_run", false).commit();
@@ -420,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         double lat;
                         double lng;
                         mMap.clear();
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(context.getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14.0f));
                         Log.d("test", "places: " + response + "");
                         PojoMapping mapping = new PojoMapping();
@@ -445,7 +444,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             distances = null;
                             createPolylineToNearest(nearestPlaceIndex, placesResponse);
                         } else {
-                            Toast.makeText(context, "Sorry No Results Found..!", Toast.LENGTH_LONG).show();
+                            placesResponse = null;
+                            new CustomToast(context).makeText(getString(R.string.no_result_found));
                         }
                         LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
                     }
@@ -455,11 +455,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // hide the progress dialog
-                        Toast.makeText(getContext(), "Something Went Wrong..!", Toast.LENGTH_LONG).show();
+                        new CustomToast(context).makeText(getString(R.string.something_went_wrong));
                         LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
                     }
                 });
-        VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+        VolleySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
 
     private void createPolylineToNearest(int nearestPlaceIndex, List<Result> placesResponse) {
@@ -493,9 +493,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             String overview_polyline = routElements[0].getOverview_polyline().getPoints();
                             direction(overview_polyline);
                         } else if (status.equalsIgnoreCase("ZERO_RESULTS")) {
-                            Toast.makeText(getContext(), getString(R.string.zero_result_found), Toast.LENGTH_LONG).show();
+                            new CustomToast(context).makeText(getString(R.string.zero_result_found));
                         } else {
-                            Toast.makeText(getContext(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
+                            new CustomToast(context).makeText(getString(R.string.something_went_wrong));
                         }
                     }
                 },
@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         Log.d("test", "Something Went Wrong While getting Directions");
                     }
                 });
-        VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+        VolleySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
 
     private void direction(String points) {
@@ -521,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void addPlacesToCluster(List<MyItem> list) {
         mClusterManager.clearItems();
         mClusterManager.addItems(list);
-        mClusterManager.setRenderer(new CustomeClusterRendered(getContext(), mMap, mClusterManager));
+        mClusterManager.setRenderer(new CustomeClusterRendered(getApplicationContext(), mMap, mClusterManager));
         mMap.setInfoWindowAdapter(new PlacesInfoWindowAdapter(context));
         mMap.setOnInfoWindowClickListener(this);
         mClusterManager.cluster();
@@ -546,7 +546,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             currentLatitude = mLastLocation.getLatitude();
             currentLongitude = mLastLocation.getLongitude();
         } else
-            Toast.makeText(getContext(), getString(R.string.couldnt_get_location), Toast.LENGTH_LONG).show();
+            new CustomToast(context).makeText(getString(R.string.couldnt_get_location));
     }
 
     private void startLocationUpdates() {
@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // For dropping a marker at a point on the Map
         if (mMap != null) {
             Log.d("test", "set up mapp called");
-            mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(getContext().getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
+            mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(context.getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
             // For zooming automatically to the Dropped PIN Location
             if (zoomLevel == 2.0f) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 16.0f));
@@ -744,5 +744,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             listText.setText(mTitles[position]);
             return rootView;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 }

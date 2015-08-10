@@ -17,7 +17,6 @@ import com.google.maps.android.ui.IconGenerator;
 
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.model.places.OpeningHours;
-import ask.piyush.findnearest.utils.FindNearestApp;
 
 /**
  * Created by piyush on 27/6/15.
@@ -26,12 +25,14 @@ public class CustomeClusterRendered extends DefaultClusterRenderer<MyItem> imple
 
     private final ClusterManager<MyItem> clusterManager;
     private final ImageView mClusterItemIcon;
+    private final IconGenerator mIconGenerator;
     private TextView mClusterItemText;
-    final IconGenerator mIconGenerator = new IconGenerator(FindNearestApp.getContext());
+
 
     public CustomeClusterRendered(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager) {
         super(context, map, clusterManager);
         this.clusterManager = clusterManager;
+        mIconGenerator = new IconGenerator(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.custome_cluster_item, null);
         mClusterItemText = (TextView) view.findViewById(R.id.info_window);
