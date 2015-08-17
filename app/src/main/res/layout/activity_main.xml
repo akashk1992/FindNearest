@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout">
 
-
     <!--<FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,12 +15,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
+    <FrameLayout
+        android:id="@+id/lockScreenLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:alpha="0.6">
 
+        <ImageView
+            android:id="@+id/tutorial_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/foto" />
+    </FrameLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_wheel_layout"
-        android:background="@android:color/holo_purple"
+        android:background="@android:color/black"
         android:alpha="0"
         android:gravity="center">
 
@@ -32,6 +43,7 @@
             wheel:matProg_progressIndeterminate="true" />
     </LinearLayout>
 
+
     <ListView
         android:layout_width="200dp"
         android:layout_height="match_parent"
@@ -41,18 +53,4 @@
         android:dividerHeight="1.5dp"
         android:divider="@android:color/black"
         android:scrollbars="none" />
-
-    <FrameLayout
-        android:id="@+id/lockScreenLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:alpha="0.6">
-
-        <ImageView
-            android:id="@+id/tutorial_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/foto" />
-    </FrameLayout>
 </android.support.v4.widget.DrawerLayout>

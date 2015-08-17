@@ -6,7 +6,7 @@
     android:id="@+id/drawer_item_layout"
     android:paddingBottom="5dp"
     android:paddingTop="5dp"
-    android:paddingLeft="12dp"
+    android:paddingLeft="8dp"
     android:background="@drawable/drawer_item_selector"
     android:gravity="center">
 

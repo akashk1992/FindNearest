@@ -34,8 +34,8 @@ public class PlacesInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         View view = layoutInflater.inflate(R.layout.info_window, null);
         TextView placeName = (TextView) view.findViewById(R.id.place_name);
         TextView placeStatus = (TextView) view.findViewById(R.id.place_status);
-        placeName.setTypeface(Typeface.createFromAsset(context.getAssets(), "font/RobotoCondensed-LightItalic.ttf"));
-        placeStatus.setTypeface(Typeface.createFromAsset(context.getAssets(), "font/Roboto-ThinItalic.ttf"));
+        placeName.setTypeface(Typeface.createFromAsset(context.getAssets(), "font/Roboto-Medium.ttf"));
+        placeStatus.setTypeface(Typeface.createFromAsset(context.getAssets(), "font/Roboto-MediumItalic.ttf"));
         placeName.setText(marker.getTitle());
         placeStatus.setText(marker.getSnippet());
         return view;

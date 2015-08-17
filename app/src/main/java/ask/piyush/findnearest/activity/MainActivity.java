@@ -25,6 +25,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -99,8 +100,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int[] mNavIcons;
     private LocationManager locationManager;
     private GoogleMap mMap;
-    private double currentLatitude = 17.4353663;
-    private double currentLongitude = 78.3920193;
+    private double currentLatitude;
+    private double currentLongitude;
     //harsha plaza =17.4353663,78.3920193
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
@@ -119,18 +120,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private PopupWindow mapTypeAlert;
     private DirectionResponse directionResponse;
     SharedPreferences first_time = null;
+    private boolean localFirstTime;
+    private FrameLayout lockScreenLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+        localFirstTime = true;
         FirstTimeUser firstTimeUser = new FirstTimeUser(true);
         firstTimeUser.save();
         first_time = getSharedPreferences("find_nearest_first_time", 0);
         findViewById(R.id.tutorial_image).setOnClickListener(this);
         findViewById(R.id.tutorial_image).setTag("tutorial");
-        findViewById(R.id.lockScreenLayout).setVisibility(View.GONE);
+        lockScreenLayout = (FrameLayout) findViewById(R.id.lockScreenLayout);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
@@ -361,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         FirstTimeUser firstTimeUser1 = FirstTimeUser.findById(FirstTimeUser.class, (long) 1);
         Log.d("tut", "" + firstTimeUser1);
         if (first_time.getBoolean("first_run", true)) {
-            findViewById(R.id.lockScreenLayout).setVisibility(View.VISIBLE);
+            lockScreenLayout.setVisibility(View.VISIBLE);
             first_time.edit().putBoolean("first_run", false).commit();
         }
         mDrawerToggle.syncState();
@@ -565,7 +569,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onLocationChanged(Location location) {
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
-        setUpMap();
+        if (localFirstTime == true) {
+            localFirstTime = false;
+            setUpMap();
+        }
     }
 
     private void setUpMapIfNeeded() {
@@ -652,7 +659,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             progressWheelLayout.setAlpha(0);
             mapTypeAlert.dismiss();
         } else if (v.getTag().equals("tutorial")) {
-            findViewById(R.id.lockScreenLayout).setVisibility(View.GONE);
+            lockScreenLayout.setVisibility(View.GONE);
         }
 
     }
