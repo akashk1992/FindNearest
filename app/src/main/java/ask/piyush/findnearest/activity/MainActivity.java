@@ -122,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     SharedPreferences first_time = null;
     private boolean localFirstTime;
     private FrameLayout lockScreenLayout;
+    private Double destinationLat;
+    private Double destinationLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -472,8 +474,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             for (Polyline polyline : polylineList)
                 polyline.remove();
         }
-        double destinationLat = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLat();
-        double destinationLng = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLng();
+        destinationLat = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLat();
+        destinationLng = placesResponse.get(nearestPlaceIndex).getGeometry().getLocation().getLng();
         webServiceCallForActualPath(destinationLat, destinationLng);
     }
 
@@ -633,8 +635,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     dialog.dismiss();
 //                    Toast.makeText(context, clickedAppName + " clicked", Toast.LENGTH_LONG).show();
                     mode = selectedMode;
-                    if (placesResponse != null)
-                        createPolylineToNearest(nearestPlaceIndex, placesResponse);
+                    if (placesResponse != null) {
+                        if (polylineList != null) {
+                            for (Polyline polyline : polylineList)
+                                polyline.remove();
+                        }
+                        webServiceCallForActualPath(destinationLat, destinationLng);
+                    }
+
+//                        createPolylineToNearest(nearestPlaceIndex, placesResponse);
                     else {
                         //alert to choose place category first
                         AlertDiaologNifty alert = new AlertDiaologNifty();
