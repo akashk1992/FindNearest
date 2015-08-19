@@ -2,6 +2,7 @@ package ask.piyush.findnearest.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -354,9 +355,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-      /*if (id == R.id.setting_string) {
+        if (id == R.id.about_us) {
+            Intent intent = new Intent(MainActivity.this, PagesActivity.class);
+            intent.putExtra("pageName", "about_us");
+            startActivity(intent);
             return true;
-        }*/
+        }
+        if (id == R.id.terms_of_uses) {
+            Intent intent = new Intent(MainActivity.this, PagesActivity.class);
+            intent.putExtra("pageName", "terms_of_uses");
+            startActivity(intent);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
