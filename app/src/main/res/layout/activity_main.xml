@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
     <FrameLayout
-        android:id="@+id/lockScreenLayout"
+        android:id="@+id/tutorial_screen_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -25,8 +25,7 @@
         <ImageView
             android:id="@+id/tutorial_image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/foto" />
+            android:layout_height="match_parent"/>
     </FrameLayout>
     <LinearLayout
         android:layout_width="match_parent"

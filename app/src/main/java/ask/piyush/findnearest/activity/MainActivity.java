@@ -76,7 +76,6 @@ import java.util.List;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.adapter.TravelModeAdapter;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
-import ask.piyush.findnearest.helper.FirstTimeUser;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.direction.DirectionResponse;
@@ -101,8 +100,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int[] mNavIcons;
     private LocationManager locationManager;
     private GoogleMap mMap;
-    private double currentLatitude;
-    private double currentLongitude;
+    private double currentLatitude = 17.4353663;
+    private double currentLongitude = 78.3920193;
     //harsha plaza =17.4353663,78.3920193
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
@@ -120,9 +119,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private FloatingActionMenu floatingActionMenu;
     private PopupWindow mapTypeAlert;
     private DirectionResponse directionResponse;
-    SharedPreferences first_time = null;
+    private SharedPreferences first_time = null;
+    private SharedPreferences first_time_markers;
     private boolean localFirstTime;
-    private FrameLayout lockScreenLayout;
+    private FrameLayout tutorialScreenLayout;
     private Double destinationLat;
     private Double destinationLng;
 
@@ -132,12 +132,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
         localFirstTime = true;
-        FirstTimeUser firstTimeUser = new FirstTimeUser(true);
-        firstTimeUser.save();
+//        FirstTimeUser firstTimeUser = new FirstTimeUser(true);
+//        firstTimeUser.save();
         first_time = getSharedPreferences("find_nearest_first_time", 0);
+        first_time_markers = getSharedPreferences("first_time_markers_tutorial", 0);
         findViewById(R.id.tutorial_image).setOnClickListener(this);
         findViewById(R.id.tutorial_image).setTag("tutorial");
-        lockScreenLayout = (FrameLayout) findViewById(R.id.lockScreenLayout);
+        tutorialScreenLayout = (FrameLayout) findViewById(R.id.tutorial_screen_layout);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
@@ -375,10 +376,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setUpMapIfNeeded();
-        FirstTimeUser firstTimeUser1 = FirstTimeUser.findById(FirstTimeUser.class, (long) 1);
-        Log.d("tut", "" + firstTimeUser1);
+//        FirstTimeUser firstTimeUser1 = FirstTimeUser.findById(FirstTimeUser.class, (long) 1);
+//        Log.d("tut", "" + firstTimeUser1);
         if (first_time.getBoolean("first_run", true)) {
-            lockScreenLayout.setVisibility(View.VISIBLE);
+            tutorialScreenLayout.setVisibility(View.VISIBLE);
+            findViewById(R.id.tutorial_image).setBackgroundResource(R.drawable.tutorial);
             first_time.edit().putBoolean("first_run", false).commit();
         }
         mDrawerToggle.syncState();
@@ -536,6 +538,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void addPlacesToCluster(List<MyItem> list) {
+        if (first_time_markers.getBoolean("first_markers", true)) {
+            //display first time markers use
+            tutorialScreenLayout.setVisibility(View.VISIBLE);
+            findViewById(R.id.tutorial_image).setBackgroundResource(R.drawable.markers);
+            first_time_markers.edit().putBoolean("first_markers", false).commit();
+        }
         mClusterManager.clearItems();
         mClusterManager.addItems(list);
         mClusterManager.setRenderer(new CustomeClusterRendered(getApplicationContext(), mMap, mClusterManager));
@@ -572,8 +580,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);//request sent at given sec
-//        mLocationRequest.setFastestInterval(5000);//auto reception of locations at given sec
+        mLocationRequest.setInterval(5000);//request sent at given interval
+//        mLocationRequest.setFastestInterval(5000);//auto reception of my location at given interval
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
     }
@@ -679,9 +687,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             progressWheelLayout.setAlpha(0);
             mapTypeAlert.dismiss();
         } else if (v.getTag().equals("tutorial")) {
-            lockScreenLayout.setVisibility(View.GONE);
+            tutorialScreenLayout.setVisibility(View.GONE);
         }
-
     }
 
     private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,
@@ -711,7 +718,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             for (Polyline polyline : polylineList)
                                 polyline.remove();
                         }
-                        webServiceCallForActualPath(latLng.latitude, latLng.longitude);
+                        destinationLat = latLng.latitude;
+                        destinationLng = latLng.longitude;
+                        webServiceCallForActualPath(destinationLat, destinationLng);
                         break;
                     case R.id.no_button:
                         break;
