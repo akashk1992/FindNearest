@@ -1,22 +1,25 @@
 package ask.piyush.findnearest.activity;
 
-import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
 import ask.piyush.findnearest.R;
 
 
-public class PagesActivity extends Activity {
+public class PagesActivity extends AppCompatActivity {
 
     private TextView pageContent;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pages_layout);
+        setUpActionBar();
         getWidgets();
         Bundle extras = getIntent().getExtras();
         Log.d("test", "" + extras.getString("pageName"));
@@ -31,12 +34,21 @@ public class PagesActivity extends Activity {
         }
     }
 
+    private void setUpActionBar() {
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
+    }
+
     private void renderTermsOfUsesPage() {
-        pageContent.setText(getResources().getString(R.string.about_us_string));
+        pageContent.setText(getResources().getString(R.string.terms_of_uses_string));
     }
 
     private void renderAboutUsPage() {
-        pageContent.setText(getResources().getString(R.string.terms_of_uses_string));
+        pageContent.setText(getResources().getString(R.string.about_us_string));
     }
 
     @Override

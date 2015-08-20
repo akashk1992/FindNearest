@@ -53,8 +53,7 @@ public class AlertDiaologNifty {
         mMaterialDialog.show();
     }
 
-    public void matrialDialog(MainActivity context, String message) {
-        //alert to select place first
+    public void matrialDialog(final MainActivity context, String message) {
         final MaterialDialog mMaterialDialog = new MaterialDialog(context);
         mMaterialDialog.setTitle("ALERT")
                 .setMessage(message)

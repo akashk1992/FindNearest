@@ -2,29 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
-    <!--<item
-        android:id="@+id/setting_string"
-        android:title="Settings"
+    <item
+        android:id="@+id/about_us"
+        android:title="About Us"
         android:orderInCategory="100"
         app:showAsAction="never" />
     <item
-        android:id="@+id/start"
-        android:title="start"
+        android:id="@+id/terms_of_uses"
+        android:title="Terms Of Uses"
         android:orderInCategory="100"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/stop"
-        android:title="stop"
-        android:orderInCategory="100"
-        app:showAsAction="never" />-->
-    <!--<item
-        android:id="@+id/radius"
-        android:title="Radius"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/travel_mode"
-        android:title="Travel Mode"
-        android:orderInCategory="100"
-        app:showAsAction="never" />-->
 </menu>

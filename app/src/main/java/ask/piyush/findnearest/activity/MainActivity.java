@@ -233,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } else {
             //if Network not available prompt user
             new AlertDiaologNifty().matrialDialog(this, context.getString(R.string.internet_prompt_msg));
+            LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
         }
     }
 

@@ -21,28 +21,29 @@
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="gps_prompt_msg">Please Turn On Location Services or GPS\nClick OK to go to location settings.</string>
-    <string name="internet_prompt_msg">Please make sure that network is available!\nPress OK to go to settings.</string>
+    <string name="gps_prompt_msg">Please Turn On Location Services or GPS\nClick OK to go to location settings</string>
+    <string name="internet_prompt_msg">Please make sure that your network connection is available and try again</string>
     <string name="me">Me</string>
     <string name="device_not_supported">This device is not supported</string>
     <string name="enter_radius">Enter Radius</string>
     <string name="select_place_alert">Please select place first and try again</string>
     <string name="zero_result_found">Zero Results Found</string>
     <string name="something_went_wrong">Oops!\nSomething Went Wrong\n Please Try Again Later</string>
-    <string name="couldnt_get_location">Couldn\'t get location..!</string>
+    <string name="couldnt_get_location">Sorry Unable get Your location..!</string>
     <string name="no_result_found">Sorry No Results Found..!</string>
     <string name="title_activity_pages">Pages</string>
-    <string name="about_us_string">Find Nearest
-developed By Akash Khandale.
+    <string name="about_us_string"><b>Find Nearest</b>
+<pre>developed By Akash Khandale.
 developer id: askplay92
 contact: askplay92@gmail.com
 page: androidlearnpoint.blogspot.com
-
+</pre>
+        <i>
 Hi Freinds,
 This app will be very usefull for people who travel a lot.
 Also who are new in new City.
 So with this app, you can find the nearest place to you
-and you can explore more about place as well.
+and you can explore more about place as well.</i>
 </string>
     <string name="terms_of_uses_string">Terms of uses:
 App will require following Permission from User:
