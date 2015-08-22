@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int[] mNavIcons;
     private LocationManager locationManager;
     private GoogleMap mMap;
-    private double currentLatitude = 17.4353663;
-    private double currentLongitude = 78.3920193;
+    private double currentLatitude;
+    private double currentLongitude;
     //harsha plaza =17.4353663,78.3920193
     ClusterManager<MyItem> mClusterManager;
     List<Polyline> polylineList = new ArrayList<>();
