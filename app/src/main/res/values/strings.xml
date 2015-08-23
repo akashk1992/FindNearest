@@ -33,23 +33,23 @@
     <string name="no_result_found">Sorry No Results Found..!</string>
     <string name="title_activity_pages">Pages</string>
     <string name="about_us_string"><b>Find Nearest</b>
-<pre>developed By Akash Khandale.
-developer id: askplay92
-contact: askplay92@gmail.com
-page: androidlearnpoint.blogspot.com
+<pre>developed By Akash Khandale\n.
+developer id: askplay92\n
+contact: askplay92@gmail.com\n
+page: androidlearnpoint.blogspot.com\n
 </pre>
         <i>
-Hi Freinds,
-This app will be very usefull for people who travel a lot.
-Also who are new in new City.
-So with this app, you can find the nearest place to you
+Hi Freinds,\n
+This app will be very usefull for people who travel a lot.\n
+Also who are new in new City.\n
+So with this app, you can find the nearest place to you\n
 and you can explore more about place as well.</i>
 </string>
-    <string name="terms_of_uses_string">Terms of uses:
-App will require following Permission from User:
-1) Internet Connection
-2) User location
-3) GPS enabled
+    <string name="terms_of_uses_string">Terms of uses:\n
+App will require following Permission from User:\n
+1) Internet Connection\n
+2) User location\n
+3) GPS enabled\n
     </string>
     <!--https://maps.googleapis.com/maps/api/directions/json?origin=ameerpet%20maitrivanam&destination=madhapur%20police%20station&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->
     <!--https://maps.googleapis.com/maps/api/directions/json?origin=17.312154,78.131321&destination=17.945217,78.374912&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->

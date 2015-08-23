@@ -4,7 +4,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -37,9 +36,8 @@ public class PagesActivity extends AppCompatActivity {
     }
 
     private void setUpActionBar() {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -54,13 +52,19 @@ public class PagesActivity extends AppCompatActivity {
     }
 
     private void renderTermsOfUsesPage() {
-//        actionBar.setTitle("Terms Of Uses");
-        pageContent.setText(Html.fromHtml(getResources().getString(R.string.terms_of_uses_string)));
+        actionBar.setTitle("Terms Of Uses");
+//        String htmlAsString = getResources().getString(R.string.terms_of_uses_string);
+//        Spanned htmlAsSpanned = Html.fromHtml(htmlAsString);
+//        pageContent.setMovementMethod(LinkMovementMethod.getInstance());
+        pageContent.setText(getResources().getString(R.string.terms_of_uses_string));
     }
 
     private void renderAboutUsPage() {
-//        actionBar.setTitle("About Us");
-        pageContent.setText(Html.fromHtml(getResources().getString(R.string.about_us_string)));
+        actionBar.setTitle("About Us");
+//        String htmlAsString = getResources().getString(R.string.about_us_string);
+//        Spanned htmlAsSpanned = Html.fromHtml(htmlAsString); // used by TextView
+//        pageContent.setMovementMethod(LinkMovementMethod.getInstance());
+        pageContent.setText(getResources().getString(R.string.about_us_string));
     }
 
     @Override

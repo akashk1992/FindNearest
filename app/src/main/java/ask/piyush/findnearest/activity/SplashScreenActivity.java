@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
-import com.koushikdutta.ion.Ion;
-
 import ask.piyush.findnearest.R;
 
 /**
@@ -22,7 +20,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen_layout);
         splashImage = (ImageView) findViewById(R.id.splash_image);
-        Ion.with(splashImage).load("android.resource://" + getPackageName() + "/" + R.drawable.latest_splash_screen);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
