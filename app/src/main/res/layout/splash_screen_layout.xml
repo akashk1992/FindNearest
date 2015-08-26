@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:fitsSystemWindows="true"
-        android:background="@drawable/splashscreen_new"
+        android:background="@drawable/splash720"
         android:id="@+id/splash_image" />
 
 </LinearLayout>

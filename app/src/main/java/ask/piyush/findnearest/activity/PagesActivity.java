@@ -61,7 +61,9 @@ public class PagesActivity extends AppCompatActivity {
                 "2) User location<br>" +
                 "3) GPS enabled<br></i><br><br>" +
                 "[Note*: We assure you that we ain't sharing your location with anyone and " +
-                "The Find Nearest Team respects user's privacy]";
+                "The Find Nearest Team respects user's privacy]<br><br>" +
+                "<b>Tips:</b><br>Outside locations would be more precise" +
+                "<br>Try using less radius for better results";
         Spanned htmlAsSpanned = Html.fromHtml(htmlAsString);
         pageContent.setMovementMethod(LinkMovementMethod.getInstance());
         pageContent.setText(htmlAsSpanned);

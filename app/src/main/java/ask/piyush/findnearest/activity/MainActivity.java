@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void setUpFab() {
         final Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         final ImageView iconMainActionBtn = new ImageView(this); // Create an icon
-        iconMainActionBtn.setImageDrawable(getResources().getDrawable(R.drawable.options100));
+        iconMainActionBtn.setImageDrawable(getResources().getDrawable(R.drawable.options_white_new));
         FloatingActionButton mainActionButton = new FloatingActionButton.Builder(this)
                 .setContentView(iconMainActionBtn)
                 .setBackgroundDrawable(R.drawable.action_button_selector)
