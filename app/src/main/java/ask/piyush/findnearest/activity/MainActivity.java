@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -86,6 +87,9 @@ import ask.piyush.findnearest.utils.CustomToast;
 import ask.piyush.findnearest.utils.LoadingBar;
 import ask.piyush.findnearest.utils.PlacesInfoWindowAdapter;
 import ask.piyush.findnearest.utils.VolleySingleton;
+import codetail.graphics.drawables.DrawableHotspotTouch;
+import codetail.graphics.drawables.LollipopDrawable;
+import codetail.graphics.drawables.LollipopDrawablesCompat;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener, GoogleMap.OnInfoWindowClickListener {
     public static GoogleApiClient mGoogleApiClient;
@@ -131,17 +135,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
-        localFirstTime = true;
-//        FirstTimeUser firstTimeUser = new FirstTimeUser(true);
-//        firstTimeUser.save();
-        first_time = getSharedPreferences("find_nearest_first_time", 0);
-        first_time_markers = getSharedPreferences("first_time_markers_tutorial", 0);
-        findViewById(R.id.tutorial_image).setOnClickListener(this);
-        findViewById(R.id.tutorial_image).setTag("tutorial");
-        tutorialScreenLayout = (FrameLayout) findViewById(R.id.tutorial_screen_layout);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
-        progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
+        initialSetup();
         setUpFab();
         LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
         setUpNavigationDrawer();
@@ -161,6 +155,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    private void initialSetup() {
+        localFirstTime = true;
+        first_time = getSharedPreferences("find_nearest_first_time", 0);
+        first_time_markers = getSharedPreferences("first_time_markers_tutorial", 0);
+        findViewById(R.id.tutorial_image).setOnClickListener(this);
+        findViewById(R.id.tutorial_image).setTag("tutorial");
+        tutorialScreenLayout = (FrameLayout) findViewById(R.id.tutorial_screen_layout);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
+    }
+
+    public Drawable getRippleDrawable(int id) {
+        return LollipopDrawablesCompat.getDrawable(getResources(), id, getTheme());
+    }
+
     private void setUpFab() {
         final Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         final ImageView iconMainActionBtn = new ImageView(this); // Create an icon
@@ -169,6 +179,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 .setContentView(iconMainActionBtn)
                 .setBackgroundDrawable(R.drawable.action_button_selector)
                 .build();
+        mainActionButton.setBackground(getRippleDrawable(R.drawable.ripple));
+        mainActionButton.setOnTouchListener(
+                new DrawableHotspotTouch((LollipopDrawable) mainActionButton.getBackground()));
         ImageView iconRadius = new ImageView(this); // Create an icon
         iconRadius.setImageDrawable(getResources().getDrawable(R.drawable.radius55));
         ImageView iconTravelMode = new ImageView(this); // Create an icon
