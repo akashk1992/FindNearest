@@ -11,4 +11,5 @@
         android:fitsSystemWindows="true"
         android:background="@drawable/splashscreen_new"
         android:id="@+id/splash_image" />
+
 </LinearLayout>

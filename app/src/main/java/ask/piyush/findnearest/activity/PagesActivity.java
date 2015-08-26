@@ -74,7 +74,7 @@ public class PagesActivity extends AppCompatActivity {
                 "developed By Akash Khandale<br>" +
                 "developer id: askplay92<br>" +
                 "contact: askplay92@gmail.com<br>" +
-                "page: androidlearnpoint.blogspot.com<br><br>" +
+                "web-site: <a href='http://akashkhandale.wix.com/find-nearest'>Find Nearest</a><br><br>" +
                 "<i><b>Find Nearest</b> is maps based application," +
                 "that lets you find the nearest place first as per selected category.<br>" +
                 "This app will be very useful for people who travels a lot.<br>" +
@@ -83,7 +83,7 @@ public class PagesActivity extends AppCompatActivity {
                 "and you can explore more about place as well.<br><br>" +
                 "User can also get the exact direction to the place with real time Navigation." +
                 "Not Only one place but user can get direction to related place.";
-        Spanned htmlAsSpanned = Html.fromHtml("" + htmlAsString); // used by TextView
+        Spanned htmlAsSpanned = Html.fromHtml(htmlAsString); // used by TextView
         pageContent.setMovementMethod(LinkMovementMethod.getInstance());
         pageContent.setText(htmlAsSpanned);
 //        pageContent.setText(getResources().getString(R.string.about_us_string));
@@ -97,5 +97,6 @@ public class PagesActivity extends AppCompatActivity {
 
     public void getWidgets() {
         pageContent = (TextView) findViewById(R.id.page_content);
+        pageContent.setTextSize(16);
     }
 }

@@ -29,7 +29,7 @@ public class AlertDiaologNifty {
         View view = inflater.inflate(R.layout.custom_alert_view, null);
         final EditText radius_input = (EditText) view.findViewById(R.id.radius_input);
         final MaterialDialog mMaterialDialog = new MaterialDialog(context);
-        mMaterialDialog.setTitle("ALERT")
+        mMaterialDialog
                 .setMessage(message)
                 .setPositiveButton("OK", new View.OnClickListener() {
                     @Override
