@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     iconMainActionBtn.setImageDrawable(getResources().getDrawable(R.drawable.options_white_new));
     FloatingActionButton mainActionButton = new FloatingActionButton.Builder(this)
         .setContentView(iconMainActionBtn)
-        .setBackgroundDrawable(R.drawable.action_button_selector)
         .build();
     mainActionButton.setBackground(getRippleDrawable(R.drawable.ripple));
     mainActionButton.setOnTouchListener(
