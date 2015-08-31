@@ -1,14 +1,63 @@
 <resources>
-    <string name="app_name">FindNearest</string>
+    <string name="app_name">Find Nearest</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="maps_api_key">AIzaSyChEdLW14gs_yNiPhNSnmfpYEt_KoggyfI</string>
+    <string name="maps_web_service_api">AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk</string>
+    <string name="web_service_url">https://maps.googleapis.com/maps/api/place/nearbysearch/json?</string>
+    <string name="web_service_url_for_direction">https://maps.googleapis.com/maps/api/directions/json?</string>
     <string-array name="places_array">
         <item>ATM</item>
-        <item>Petrol Pump</item>
+        <item>Fuel Station</item>
         <item>Hospital</item>
         <item>Restaurant</item>
+        <item>Movie Theater</item>
+        <item>Police</item>
+        <item>bakery</item>
+        <item>Laundry</item>
+        <item>Liquor Store</item>
+        <item>Bar</item>
+        <item>Bank</item>
+        <item>Bus Station</item>
+        <item>Train Station</item>
+        <item>Cafe</item>
+        <item>Church</item>
+        <item>Gym</item>
+        <item>Doctor</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="gps_prompt_msg">Please Turn On Location Services or GPS\nClick OK to go to location settings</string>
+    <string name="internet_prompt_msg">Please make sure that your network connection is available and try again</string>
+    <string name="me">Me</string>
+    <string name="device_not_supported">This device is not supported</string>
+    <string name="enter_radius">Enter Radius</string>
+    <string name="select_place_alert">Please select place first and try again</string>
+    <string name="zero_result_found">Zero Results Found</string>
+    <string name="something_went_wrong">Oops!\nSomething Went Wrong\n Please Try Again Later</string>
+    <string name="couldnt_get_location">Sorry Unable get Your location..!</string>
+    <string name="no_result_found">Sorry No Results Found..!</string>
+    <string name="title_activity_pages">Pages</string>
+    <string name="about_us_string">
+        <b>Find Nearest</b>
+        \n\ndeveloped By Akash Khandale.\n
+        developer id: askplay92\n
+        contact: askplay92@gmail.com\n
+        page: androidlearnpoint.blogspot.com\n
+        Find Nearest is maps based application,
+        that lets you find the nearest places as per selected category.\n
+        This app will be very usefull for people who travel a lot.\n
+        Also who are new in new City.\n
+        So with this app, you can find the nearest place to you\n
+        and you can explore more about place as well.
+    </string>
+    <string name="terms_of_uses_string"><b>Terms of uses:</b>\n
+        App will require following Permission from User:\n
+        1) Internet Connection\n
+        2) User location\n
+        3) GPS enabled\n
+    </string>
+    <!--https://maps.googleapis.com/maps/api/directions/json?origin=ameerpet%20maitrivanam&destination=madhapur%20police%20station&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->
+    <!--https://maps.googleapis.com/maps/api/directions/json?origin=17.312154,78.131321&destination=17.945217,78.374912&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->
 </resources>

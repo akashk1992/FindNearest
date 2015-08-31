@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="2dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cluster_icon" />
+
+    <TextView
+        android:id="@+id/info_window"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/custom_profile_padding"
+        android:paddingRight="@dimen/custom_profile_padding"
+        android:layout_gravity="center" />
+
+</FrameLayout>

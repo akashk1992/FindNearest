@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/map_type_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="#009688">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/map_type_satellite"
+        android:padding="5dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/map_type_selector"
+        android:src="@drawable/satellietview" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/map_type_normal"
+        android:adjustViewBounds="true"
+        android:background="@drawable/map_type_selector"
+        android:src="@drawable/normalmapview" />
+
+
+</LinearLayout>
