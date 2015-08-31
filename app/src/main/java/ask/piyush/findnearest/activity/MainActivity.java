@@ -243,15 +243,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
     super.onStop();
   }
-/*
-    private void callMapFragment() {
-        fragmentManager = getSupportFragmentManager();
-        //call initial map fragment
-        MapFragment newFragment = new MapFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, newFragment);
-        transaction.commit();
-    }*/
 
   private boolean isNetworkAvailable() {
     ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -276,7 +267,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         R.drawable.bakeryicon,
         R.drawable.laundary32,
         R.drawable.beer32,
-        R.drawable.bar32
+        R.drawable.bar32,
+        R.drawable.bank32,
+        R.drawable.bus_station32,
+        R.drawable.train32,
+        R.drawable.cafe32,
+        R.drawable.church32,
+        R.drawable.gym32,
+        R.drawable.health32
     };
     //custome drawer list
     CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
