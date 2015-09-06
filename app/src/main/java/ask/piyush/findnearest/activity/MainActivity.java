@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private int[] mNavIcons;
   private LocationManager locationManager;
   private GoogleMap mMap;
-  private double currentLatitude = 17.4353663;
-  private double currentLongitude = 78.3920193;
+  private double currentLatitude;
+  private double currentLongitude;
   //harsha plaza =17.4353663,78.3920193
   ClusterManager<MyItem> mClusterManager;
   List<Polyline> polylineList = new ArrayList<>();
@@ -420,13 +420,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             double lng;
             mMap.clear();
             mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(context.getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14.0f));
+            /*mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14.0f));
             mMap.addCircle(new CircleOptions()
                 .center(new LatLng(currentLatitude, currentLongitude))
                 .radius(radius + 300)
                 .strokeColor(getResources().getColor(R.color.app_color_light))
                 .strokeWidth(5)
-                .fillColor(0x5066c0b7));
+                .fillColor(0x5066c0b7));*/
             Log.d("test", "places: " + response + "");
             PojoMapping mapping = new PojoMapping();
             ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
@@ -521,6 +521,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
       polylineColor = getResources().getColor(R.color.app_color);
     else polylineColor = getResources().getColor(R.color.orange);
     Polyline polyline = mMap.addPolyline(new PolylineOptions().color(polylineColor).addAll(decodedPath));
+
+    /*CameraPosition cameraPosition = new CameraPosition.Builder()
+        .target(new LatLng(currentLatitude, currentLongitude))
+        .bearing(45)
+        .zoom(16.0f)
+        .tilt(85).build();*/
+//    LatLngBounds bounds = new LatLngBounds(
+//        new LatLng(destinationLat, destinationLng), new LatLng(currentLatitude, currentLongitude));
+
+    CameraPosition cameraPosition = new CameraPosition.Builder()
+        .target(new LatLng(currentLatitude, currentLongitude))
+        .zoom(14.0f)
+        .build();
+    mMap.addCircle(new CircleOptions()
+        .center(new LatLng(currentLatitude, currentLongitude))
+        .radius(radius + 300)
+        .strokeColor(getResources().getColor(R.color.app_color_light))
+        .strokeWidth(5)
+        .fillColor(0x5066c0b7));
+    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
     polylineList.add(polyline);
   }
 
@@ -595,6 +616,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //                mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.setBuildingsEnabled(true);
         setUpClusterer();
         setUpMap();
       }
