@@ -1,11 +1,9 @@
 package ask.piyush.findnearest.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -17,11 +15,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.*;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import ask.piyush.findnearest.R;
+import ask.piyush.findnearest.adapter.CustomeDrawerListAdapter;
 import ask.piyush.findnearest.adapter.TravelModeAdapter;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     context = getApplicationContext();
     initialSetup();
     setUpFab();
-    LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
+    new LoadingBar(context).showProgressWheel(true, progressWheel, progressWheelLayout);
     setUpNavigationDrawer();
     /********check GPS Status*************/
     locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
@@ -209,15 +211,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     if (isNetworkAvailable()) {
       if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
         new AlertDiaologNifty().materialDialogForGPS(this, context.getString(R.string.gps_prompt_msg), Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
+        new LoadingBar(context).showProgressWheel(false, progressWheel, progressWheelLayout);
       } else {
-        LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
+        new LoadingBar(context).showProgressWheel(false, progressWheel, progressWheelLayout);
         setUpMapIfNeeded();
       }
     } else {
       //if Network not available prompt user
       new AlertDiaologNifty().matrialDialog(this, context.getString(R.string.internet_prompt_msg));
-      LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
+      new LoadingBar(context).showProgressWheel(false, progressWheel, progressWheelLayout);
     }
   }
 
@@ -276,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         R.drawable.health32
     };
     //custome drawer list
-    CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons);
+    CustomeDrawerListAdapter customeDrawerListAdapter = new CustomeDrawerListAdapter(mNavTitle, mNavIcons, context);
     mDrawerList.setAdapter(customeDrawerListAdapter);
     mDrawerList.setOnItemClickListener(this);
     setUpDrawerToggle();
@@ -379,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 // 2) update title(call @overriden setTitle() method)
 // 3) close Drawer
     view.setSelected(true);
-    LoadingBar.showProgressWheel(true, progressWheel, progressWheelLayout);
+    new LoadingBar(context).showProgressWheel(true, progressWheel, progressWheelLayout);
     TextView drawerListText = (TextView) view.findViewById(R.id.drawer_list_text);
     String selectedDrawerItem = drawerListText.getText().toString();
     String placesWebServiceUrl = buildGooglePlaceUrl(selectedDrawerItem.trim().toLowerCase().replace(' ', '_'));
@@ -453,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
               placesResponse = null;
               new CustomToast(context).makeText(getString(R.string.no_result_found));
             }
-            LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
+            new LoadingBar(context).showProgressWheel(false, progressWheel, progressWheelLayout);
           }
         },
         new Response.ErrorListener() {
@@ -462,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
           public void onErrorResponse(VolleyError error) {
             // hide the progress dialog
             new CustomToast(context).makeText(getString(R.string.something_went_wrong));
-            LoadingBar.showProgressWheel(false, progressWheel, progressWheelLayout);
+            new LoadingBar(context).showProgressWheel(false, progressWheel, progressWheelLayout);
           }
         });
     VolleySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
@@ -749,47 +751,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         .setOnClickListener(clickListener)
         .create();
     dialog.show();
-  }
-
-  private class CustomeDrawerListAdapter extends BaseAdapter {
-
-    private final String[] mTitles;
-    private final int[] mIcons;
-
-    public CustomeDrawerListAdapter(String[] mNavTitle, int[] mNavIcons) {
-      this.mTitles = mNavTitle;
-      this.mIcons = mNavIcons;
-    }
-
-    @Override
-    public int getCount() {
-      return mNavTitle.length;
-    }
-
-    @Override
-    public Object getItem(int position) {
-      return mNavTitle[position];
-    }
-
-    @Override
-    public long getItemId(int position) {
-      return 0;
-    }
-
-    @SuppressLint("NewApi")
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-      View rootView = inflater.inflate(R.layout.drawer_list_item, parent, false);
-      TextView listText = (TextView) rootView.findViewById(R.id.drawer_list_text);
-//            ImageView listIcon = (ImageView) rootView.findViewById(R.id.drawer_list_icon);
-      listText.setCompoundDrawablesWithIntrinsicBounds(mIcons[position], 0, 0, 0);
-//            listIcon.setBackground(getResources().getDrawable(mIcons[position]));
-      listText.setBackground(getRippleDrawable(R.drawable.ripple_list_item));
-      listText.setTypeface(Typeface.createFromAsset(getAssets(), "font/RobotoCondensed-Regular.ttf"));
-      listText.setText(mTitles[position]);
-      return rootView;
-    }
   }
 
   @Override
