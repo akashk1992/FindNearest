@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
@@ -151,7 +152,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     FloatingActionButton mainActionButton = new FloatingActionButton.Builder(this)
         .setContentView(iconMainActionBtn)
         .build();
-    mainActionButton.setBackground(getRippleDrawable(R.drawable.ripple));
+    if (Build.VERSION.SDK_INT >= 16)
+      mainActionButton.setBackground(getRippleDrawable(R.drawable.ripple));
     mainActionButton.setOnTouchListener(
         new DrawableHotspotTouch((LollipopDrawable) mainActionButton.getBackground()));
     ImageView iconRadius = new ImageView(this); // Create an icon

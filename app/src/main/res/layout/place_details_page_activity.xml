@@ -1,0 +1,85 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="16dp"
+              android:paddingTop="16dp"
+              android:orientation="vertical">
+
+  <TextView
+      android:id="@+id/place_heading_tv"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textSize="30sp"
+      android:textStyle="bold"
+      android:textColor="@color/app_color"/>
+
+  <TextView
+      android:id="@+id/place_status_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/app_color"
+      android:textSize="20sp"
+      android:layout_marginTop="8dp"/>
+
+  <TextView
+      android:id="@+id/place_ratings_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/app_color"
+      android:textSize="20sp"
+      android:layout_marginTop="8dp"/>
+
+  <TextView
+      android:id="@+id/landmark_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/app_color"
+      android:textSize="20sp"
+      android:layout_marginTop="8dp"/>
+
+  <TextView
+      android:id="@+id/title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Get Direction ?"
+      android:textColor="@color/app_color"
+      android:textSize="20sp"
+      android:layout_marginTop="8dp"/>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_marginTop="5dp"
+      android:paddingRight="16dp"
+      android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/yes_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Yes"
+        android:paddingTop="15dp"
+        android:gravity="center"
+        android:paddingBottom="15dp"
+        android:background="@drawable/border"
+        android:textColor="@color/app_color"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/no_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingTop="15dp"
+        android:layout_marginLeft="6dp"
+        android:paddingBottom="15dp"
+        android:background="@drawable/border"
+        android:text="No"
+        android:textColor="@color/app_color"
+        android:textSize="16sp"/>
+  </LinearLayout>
+
+</LinearLayout>
