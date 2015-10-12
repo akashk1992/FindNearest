@@ -3,38 +3,23 @@ package ask.piyush.findnearest.model.direction;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Northeast {
+public class OverviewPolyline {
 
-  private Double lat;
-  private Double lng;
+  private String points;
   private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
   /**
-   * @return The lat
+   * @return The points
    */
-  public Double getLat() {
-    return lat;
+  public String getPoints() {
+    return points;
   }
 
   /**
-   * @param lat The lat
+   * @param points The points
    */
-  public void setLat(Double lat) {
-    this.lat = lat;
-  }
-
-  /**
-   * @return The lng
-   */
-  public Double getLng() {
-    return lng;
-  }
-
-  /**
-   * @param lng The lng
-   */
-  public void setLng(Double lng) {
-    this.lng = lng;
+  public void setPoints(String points) {
+    this.points = points;
   }
 
   public Map<String, Object> getAdditionalProperties() {

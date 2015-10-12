@@ -48,11 +48,9 @@ public class CustomeDrawerListAdapter extends BaseAdapter {
     LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View rootView = inflater.inflate(R.layout.drawer_list_item, parent, false);
     TextView listText = (TextView) rootView.findViewById(R.id.drawer_list_text);
-//            ImageView listIcon = (ImageView) rootView.findViewById(R.id.drawer_list_icon);
     listText.setCompoundDrawablesWithIntrinsicBounds(mIcons[position], 0, 0, 0);
-//            listIcon.setBackground(getResources().getDrawable(mIcons[position]));
     listText.setBackground(getRippleDrawable(R.drawable.ripple_list_item));
-    listText.setTypeface(Typeface.createFromAsset(context.getAssets(), "font/RobotoCondensed-Regular.ttf"));
+    listText.setTypeface(Typeface.createFromAsset(context.getAssets(), "font/candara.ttf"));
     listText.setText(mNavTitle[position]);
     return rootView;
   }

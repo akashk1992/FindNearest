@@ -3,7 +3,7 @@ package ask.piyush.findnearest.model.direction;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Northeast {
+public class StartLocation {
 
   private Double lat;
   private Double lng;

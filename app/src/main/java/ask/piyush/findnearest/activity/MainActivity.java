@@ -29,7 +29,7 @@ import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.direction.DirectionResponse;
-import ask.piyush.findnearest.model.direction.RoutElement;
+import ask.piyush.findnearest.model.direction.Route;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.*;
 import codetail.graphics.drawables.DrawableHotspotTouch;
@@ -415,21 +415,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
         placesWebServiceUrl, "",
         new Response.Listener<JSONObject>() {
-
           @Override
           public void onResponse(JSONObject response) {
             double lat;
             double lng;
             mMap.clear();
-            mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(context.getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-            /*mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14.0f));
-            mMap.addCircle(new CircleOptions()
-                .center(new LatLng(currentLatitude, currentLongitude))
-                .radius(radius + 300)
-                .strokeColor(getResources().getColor(R.color.app_color_light))
-                .strokeWidth(5)
-                .fillColor(0x5066c0b7));*/
-            Log.d("test", "places: " + response + "");
+            mMap.addMarker(
+                new MarkerOptions()
+                    .position(new LatLng(currentLatitude, currentLongitude))
+                    .title(context.getString(R.string.me))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
+            );
+            Log.d("test", "places: " + response);
             PojoMapping mapping = new PojoMapping();
             ask.piyush.findnearest.model.places.Response jsonResponse = mapping.getPlacesResponse(response.toString());
             placesResponse = jsonResponse.getResults();
@@ -495,10 +492,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
           public void onResponse(JSONObject response) {
             Log.d("test", "path: " + response);
             directionResponse = new PojoMapping().getResponse(response.toString());
-            RoutElement[] routElements = directionResponse.getRoutes();
+            List<Route> routes = directionResponse.getRoutes();
             String status = directionResponse.getStatus();
             if (status.equalsIgnoreCase("OK")) {
-              String overview_polyline = routElements[0].getOverview_polyline().getPoints();
+              String overview_polyline = routes.get(0).getOverviewPolyline().getPoints();
+              String distance = routes.get(0).getLegs().get(0).getDistance().getText();
+              Log.d("test", "dist: " + distance);
               direction(overview_polyline);
             } else if (status.equalsIgnoreCase("ZERO_RESULTS")) {
               new CustomToast(context).makeText(getString(R.string.zero_result_found));
@@ -522,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     if (mode.equalsIgnoreCase("Driving"))
       polylineColor = getResources().getColor(R.color.app_color);
     else polylineColor = getResources().getColor(R.color.orange);
-    Polyline polyline = mMap.addPolyline(new PolylineOptions().color(polylineColor).addAll(decodedPath));
+    Polyline polyline = mMap.addPolyline(new PolylineOptions().color(polylineColor).geodesic(true).addAll(decodedPath));
 
     /*CameraPosition cameraPosition = new CameraPosition.Builder()
         .target(new LatLng(currentLatitude, currentLongitude))
@@ -630,8 +629,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // For dropping a marker at a point on the Map
     if (mMap != null) {
       Log.d("test", "set up mapp called");
-      mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title(context.getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
-      // For zooming automatically to the Dropped PIN Location
+      mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).flat(true).title(context.getString(R.string.me)).icon(BitmapDescriptorFactory.fromResource(R.drawable.me)));
       if (zoomLevel == 2.0f) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 16.0f));
         zoomLevel = mMap.getCameraPosition().zoom;
@@ -663,7 +661,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
           TextView textView = (TextView) view.findViewById(R.id.text_view);
           String selectedMode = textView.getText().toString();
           dialog.dismiss();
-//                    Toast.makeText(context, clickedAppName + " clicked", Toast.LENGTH_LONG).show();
           mode = selectedMode;
           if (placesResponse != null) {
             if (polylineList != null) {
@@ -671,11 +668,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 polyline.remove();
             }
             webServiceCallForActualPath(destinationLat, destinationLng);
-          }
-
-//                        createPolylineToNearest(nearestPlaceIndex, placesResponse);
-          else {
-            //alert to choose place category first
+          } else {
             AlertDiaologNifty alert = new AlertDiaologNifty();
             alert.matrialDialog(MainActivity.this, getString(R.string.select_place_alert));
           }
@@ -740,7 +733,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
       }
     };
     showNoFooterDialog(holder, Gravity.BOTTOM, clickListener);
-
   }
 
   private void showNoFooterDialog(Holder holder, int gravity, OnClickListener clickListener) {
