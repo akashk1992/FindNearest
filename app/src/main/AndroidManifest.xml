@@ -52,21 +52,23 @@
 
     <activity
         android:name=".activity.PlaceDetailsPage"
-        android:label="@string/title_activity_place_details_page">
+        android:excludeFromRecents="true"
+        android:taskAffinity=""
+        android:theme="@style/Theme.Sliding.Light">
     </activity>
 
     <!-- Setting For SugarApp -->
     <!--
- <meta-data
+  <meta-data
      android:name="DATABASE"
      android:value="first_user1.db" />
- <meta-data
+  <meta-data
      android:name="VERSION"
      android:value="1" />
- <meta-data
+  <meta-data
      android:name="QUERY_LOG"
      android:value="true" />
- <meta-data
+  <meta-data
      android:name="DOMAIN_PACKAGE_NAME"
      android:value="ask.piyush.findnearest" />
     -->

@@ -29,6 +29,7 @@ import ask.piyush.findnearest.adapter.TravelModeAdapter;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
+import ask.piyush.findnearest.helper.PopulateDetails;
 import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.Route;
 import ask.piyush.findnearest.model.places.Result;
@@ -710,11 +711,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     dialog.show();
   }
 
+  public Intent addExpansionArgs(Intent intent) {
+    final String ARG_USE_EXPANSION = "arg_use_expansion";
+    final String ARG_EXPANSION_LEFT_OFFSET = "arg_left_offset";
+    final String ARG_EXPANSION_TOP_OFFSET = "arg_top_offset";
+    final String ARG_EXPANSION_VIEW_WIDTH = "arg_view_width";
+    final String ARG_EXPANSION_VIEW_HEIGHT = "arg_view_height";
+//    intent.putExtra(ARG_USE_EXPANSION, true);
+    View expansionView = findViewById(R.id.expansion_view);
+    int location[] = new int[2];
+    expansionView.getLocationInWindow(location);
+//    intent.putExtra("marker", marker);
+    intent.putExtra(ARG_EXPANSION_LEFT_OFFSET, location[0]);
+    intent.putExtra(ARG_EXPANSION_TOP_OFFSET, location[1]);
+    intent.putExtra(ARG_EXPANSION_VIEW_WIDTH, expansionView.getWidth());
+    intent.putExtra(ARG_EXPANSION_VIEW_HEIGHT, expansionView.getHeight());
+    return intent;
+  }
+
   @Override
   public void onInfoWindowClick(final Marker marker) {
     floatingActionMenu.close(true);
     ViewHolder holder = new ViewHolder(R.layout.place_details_page_activity);
-    OnClickListener clickListener = new OnClickListener() {
+    new PopulateDetails(context);
+    startActivity(addExpansionArgs(new Intent(this, PlaceDetailsPage.class)));
+    /*OnClickListener clickListener = new OnClickListener() {
       @Override
       public void onClick(DialogPlus dialog, View view) {
         switch (view.getId()) {
@@ -734,7 +755,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         dialog.dismiss();
       }
     };
-    showNoFooterDialog(holder, Gravity.BOTTOM, clickListener);
+    showNoFooterDialog(holder, Gravity.BOTTOM, clickListener);*/
   }
 
   private void showNoFooterDialog(Holder holder, int gravity, OnClickListener clickListener) {
