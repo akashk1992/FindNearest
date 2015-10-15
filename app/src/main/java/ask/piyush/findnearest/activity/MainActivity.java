@@ -713,7 +713,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   @Override
   public void onInfoWindowClick(final Marker marker) {
     floatingActionMenu.close(true);
-    ViewHolder holder = new ViewHolder(R.layout.directiion_alert);
+    ViewHolder holder = new ViewHolder(R.layout.place_details_page_activity);
     OnClickListener clickListener = new OnClickListener() {
       @Override
       public void onClick(DialogPlus dialog, View view) {
@@ -740,6 +740,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private void showNoFooterDialog(Holder holder, int gravity, OnClickListener clickListener) {
     final DialogPlus dialog = new DialogPlus.Builder(this)
         .setContentHolder(holder)
+        .setExpanded(true)
         .setCancelable(false)
         .setGravity(gravity)
         .setOnClickListener(clickListener)

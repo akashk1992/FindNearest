@@ -1,8 +1,9 @@
-package ask.piyush.findnearest;
+package ask.piyush.findnearest.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import ask.piyush.findnearest.R;
 
 public class PlaceDetailsPage extends AppCompatActivity {
 

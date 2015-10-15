@@ -51,7 +51,7 @@
         android:theme="@style/AppTheme"/>
 
     <activity
-        android:name=".PlaceDetailsPage"
+        android:name=".activity.PlaceDetailsPage"
         android:label="@string/title_activity_place_details_page">
     </activity>
 
