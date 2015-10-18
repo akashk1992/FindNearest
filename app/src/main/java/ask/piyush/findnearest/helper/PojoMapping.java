@@ -1,6 +1,7 @@
 package ask.piyush.findnearest.helper;
 
 import ask.piyush.findnearest.model.direction.DirectionResponse;
+import ask.piyush.findnearest.model.placeDetails.PlaceDetailsResponse;
 import ask.piyush.findnearest.model.places.Response;
 import com.google.gson.Gson;
 
@@ -17,6 +18,12 @@ public class PojoMapping {
   public DirectionResponse getResponse(String jsonResponse) {
     Gson gson = new Gson();
     DirectionResponse response = gson.fromJson(jsonResponse, DirectionResponse.class);
+    return response;
+  }
+
+  public PlaceDetailsResponse getDetailsResponse(String jsonResponse) {
+    Gson gson = new Gson();
+    PlaceDetailsResponse response = gson.fromJson(jsonResponse, PlaceDetailsResponse.class);
     return response;
   }
 }

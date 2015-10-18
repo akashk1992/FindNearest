@@ -29,7 +29,6 @@ import ask.piyush.findnearest.adapter.TravelModeAdapter;
 import ask.piyush.findnearest.helper.CustomeClusterRendered;
 import ask.piyush.findnearest.helper.MyItem;
 import ask.piyush.findnearest.helper.PojoMapping;
-import ask.piyush.findnearest.helper.PopulateDetails;
 import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.Route;
 import ask.piyush.findnearest.model.places.Result;
@@ -64,6 +63,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, View.OnClickListener, GoogleMap.OnInfoWindowClickListener {
@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private FrameLayout tutorialScreenLayout;
   private Double destinationLat;
   private Double destinationLng;
+  private HashMap<String, String> extraMarkerInfo = new HashMap<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -437,10 +438,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             ArrayList<Double> distances = new ArrayList();
             if (!(placesResponse.size() == 0)) {
               for (int index = 0; index < placesResponse.size(); index++) {
-                lat = placesResponse.get(index).getGeometry().getLocation().getLat();
-                lng = placesResponse.get(index).getGeometry().getLocation().getLng();
+                ask.piyush.findnearest.model.places.Location location1 = placesResponse.get(index).getGeometry().getLocation();
+                lat = location1.getLat();
+                lng = location1.getLng();
                 distances.add(SphericalUtil.computeDistanceBetween(new LatLng(lat, lng), new LatLng(currentLatitude, currentLongitude)));
                 clusterItems.add(new MyItem(lat, lng, mNavIcons[position], placesResponse.get(index)));
+                extraMarkerInfo.put(placesResponse.get(index).getName(), placesResponse.get(index).getPlaceId());
               }
               ArrayList<Double> distBeforeSort = new ArrayList(distances);
               Collections.sort(distances);
@@ -732,9 +735,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   @Override
   public void onInfoWindowClick(final Marker marker) {
     floatingActionMenu.close(true);
-    ViewHolder holder = new ViewHolder(R.layout.place_details_page_activity);
-    new PopulateDetails(context);
-    startActivity(addExpansionArgs(new Intent(this, PlaceDetailsPage.class)));
+    String placeId = extraMarkerInfo.get(marker.getTitle());
+//    ViewHolder holder = new ViewHolder(R.layout.place_details_page_activity);
+    Intent intent = new Intent(this, PlaceDetailsPage.class);
+    intent.putExtra("placeId", placeId);
+    intent.putExtra("placeTitle", marker.getTitle());
+    startActivity(addExpansionArgs(intent));
     /*OnClickListener clickListener = new OnClickListener() {
       @Override
       public void onClick(DialogPlus dialog, View view) {
