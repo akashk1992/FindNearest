@@ -724,7 +724,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     View expansionView = findViewById(R.id.expansion_view);
     int location[] = new int[2];
     expansionView.getLocationInWindow(location);
-//    intent.putExtra("marker", marker);
     intent.putExtra(ARG_EXPANSION_LEFT_OFFSET, location[0]);
     intent.putExtra(ARG_EXPANSION_TOP_OFFSET, location[1]);
     intent.putExtra(ARG_EXPANSION_VIEW_WIDTH, expansionView.getWidth());
@@ -736,43 +735,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   public void onInfoWindowClick(final Marker marker) {
     floatingActionMenu.close(true);
     String placeId = extraMarkerInfo.get(marker.getTitle());
-//    ViewHolder holder = new ViewHolder(R.layout.place_details_page_activity);
     Intent intent = new Intent(this, PlaceDetailsPage.class);
     intent.putExtra("placeId", placeId);
     intent.putExtra("placeTitle", marker.getTitle());
     startActivity(addExpansionArgs(intent));
-    /*OnClickListener clickListener = new OnClickListener() {
-      @Override
-      public void onClick(DialogPlus dialog, View view) {
-        switch (view.getId()) {
-          case R.id.yes_button:
-            LatLng latLng = marker.getPosition();
-            if (polylineList != null) {
-              for (Polyline polyline : polylineList)
-                polyline.remove();
-            }
-            destinationLat = latLng.latitude;
-            destinationLng = latLng.longitude;
-            webServiceCallForActualPath(destinationLat, destinationLng);
-            break;
-          case R.id.no_button:
-            break;
-        }
-        dialog.dismiss();
-      }
-    };
-    showNoFooterDialog(holder, Gravity.BOTTOM, clickListener);*/
-  }
-
-  private void showNoFooterDialog(Holder holder, int gravity, OnClickListener clickListener) {
-    final DialogPlus dialog = new DialogPlus.Builder(this)
-        .setContentHolder(holder)
-        .setExpanded(true)
-        .setCancelable(false)
-        .setGravity(gravity)
-        .setOnClickListener(clickListener)
-        .create();
-    dialog.show();
   }
 
   @Override

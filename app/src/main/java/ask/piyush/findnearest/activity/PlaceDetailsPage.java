@@ -2,20 +2,29 @@ package ask.piyush.findnearest.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.helper.PojoMapping;
 import ask.piyush.findnearest.model.placeDetails.PlaceDetailsResponse;
+import ask.piyush.findnearest.model.placeDetails.Result;
+import ask.piyush.findnearest.model.placeDetails.Review;
 import ask.piyush.findnearest.utils.VolleySingleton;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.klinker.android.sliding.SlidingActivity;
+import io.techery.properratingbar.ProperRatingBar;
 import org.json.JSONObject;
 
 public class PlaceDetailsPage extends SlidingActivity {
@@ -30,7 +39,12 @@ public class PlaceDetailsPage extends SlidingActivity {
   private String placeId;
   private String placeName;
   private TextView vicinityLandmark;
-  private TextView userRatings;
+  private ProperRatingBar userRatingsBar;
+  private ProperRatingBar criticsRatingBar;
+  private TextView placeRatingTV;
+  private TextView criticsRatingTV;
+  private TextView phoneNumTV;
+  private TextView phoneText;
 
   @Override
   public void init(Bundle bundle) {
@@ -49,24 +63,19 @@ public class PlaceDetailsPage extends SlidingActivity {
     );
     placeId = intent.getStringExtra("placeId");
     placeName = intent.getStringExtra("placeTitle");
-    Log.d("test", "placeId " + placeId);
     placeTitle = (TextView) findViewById(R.id.place_heading_tv);
     vicinityLandmark = (TextView) findViewById(R.id.landmark_tv);
-    userRatings = (TextView) findViewById(R.id.place_ratings_tv);
+    userRatingsBar = (ProperRatingBar) findViewById(R.id.user_rating_bar);
+    placeRatingTV = (TextView) findViewById(R.id.place_ratings_tv);
+    phoneNumTV = (TextView) findViewById(R.id.phone_number_tv);
+    phoneText = (TextView) findViewById(R.id.phone_text);
+    criticsRatingTV = (TextView) findViewById(R.id.critics_ratings_tv);
+    criticsRatingBar = (ProperRatingBar) findViewById(R.id.rating_bar);
     webServiceCall();
-   /* LatLng latLng = marker.getPosition();
-    if (polylineList != null) {
-      for (Polyline polyline : polylineList)
-        polyline.remove();
-    }
-    destinationLat = latLng.latitude;
-    destinationLng = latLng.longitude;*/
-//    webServiceCallForActualPath(destinationLat, destinationLng);
-//    dialog.dismiss();
   }
 
   private void webServiceCall() {
-    String placeDetailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?" +
+    String placeDetailsUrl = getString(R.string.place_details_webservice) +
         "placeid=" + placeId +
         "&key=" + getResources().getString(R.string.maps_web_service_api);
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -79,7 +88,7 @@ public class PlaceDetailsPage extends SlidingActivity {
             Log.d("test", "place details response: " + response.toString());
             placeDetailsResponse = new PojoMapping().getDetailsResponse(response.toString());
             if (placeDetailsResponse.getStatus().equalsIgnoreCase("ok"))
-              populate();
+              populate(placeDetailsResponse.getResult());
             else Toast.makeText(PlaceDetailsPage.this, "Something went wrong..!", Toast.LENGTH_SHORT).show();
           }
         },
@@ -100,10 +109,47 @@ public class PlaceDetailsPage extends SlidingActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  public void populate() {
+  public void dialNumber(View view) {
+    Uri number = Uri.parse("tel:" + placeDetailsResponse.getResult().getFormattedPhoneNumber());
+    Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
+    startActivity(callIntent);
+  }
 
+  private void setTextStyle() {
+    SpannableString spannableString1 = new SpannableString(phoneText.getText());
+    spannableString1.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purplle)), 5, phoneText.getText().length(), 0);
+    spannableString1.setSpan(new RelativeSizeSpan(0.7f), 5, phoneText.getText().length(), 0);
+    phoneText.setText(spannableString1);
+
+    SpannableString spannableString2 = new SpannableString(phoneNumTV.getText());
+    spannableString2.setSpan(new UnderlineSpan(), 0, phoneNumTV.getText().length(), 0);
+    phoneNumTV.setText(spannableString2);
+
+    SpannableString spannableString3 = new SpannableString(vicinityLandmark.getText());
+    spannableString3.setSpan(new RelativeSizeSpan(0.8f), 0, 6, 0);
+    vicinityLandmark.setText(spannableString3);
+  }
+
+  public void populate(Result result) {
     placeTitle.setText(placeName);
-    vicinityLandmark.setText("Near By: " + placeDetailsResponse.getResult().getVicinity());
-    userRatings.setText("User Rating: " + placeDetailsResponse.getResult().getUserRatingsTotal());
+    Integer critcsReview = 0;
+    if (result.getReviews() != null) {
+      for (Review review : result.getReviews()) {
+        critcsReview += review.getRating();
+      }
+      critcsReview = critcsReview / result.getReviews().size();
+      criticsRatingBar.setRating(critcsReview);
+    } else {
+      criticsRatingBar.setVisibility(View.GONE);
+    }
+    vicinityLandmark.setText("Near By\n" + result.getVicinity());
+    userRatingsBar.setRating(result.getUserRatingsTotal());
+    if (result.getFormattedPhoneNumber() != null && !result.getFormattedPhoneNumber().isEmpty()) {
+      phoneNumTV.setText(result.getFormattedPhoneNumber());
+    } else {
+      phoneNumTV.setVisibility(View.GONE);
+      phoneText.setVisibility(View.GONE);
+    }
+    setTextStyle();
   }
 }

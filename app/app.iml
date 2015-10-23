@@ -124,9 +124,10 @@
     <orderEntry type="library" exported="" name="dialogplus-1.7" level="project" />
     <orderEntry type="library" exported="" name="android-maps-utils-0.3.4" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.0.0" level="project" />
+    <orderEntry type="library" exported="" name="ProperRatingBar-7f8749b" level="project" />
     <orderEntry type="library" exported="" name="merlin-0.6.3" level="project" />
     <orderEntry type="library" exported="" name="sliding-activity-1.1.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-7.3.0" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-23.0.0" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-23.0.1" level="project" />
   </component>
 </module>

@@ -59,6 +59,7 @@
         3) GPS enabled\n
     </string>
   <string name="title_activity_place_details_page">PlaceDetailsPage</string>
+  <string name="place_details_webservice">https://maps.googleapis.com/maps/api/place/details/json?</string>
   <!--https://maps.googleapis.com/maps/api/directions/json?origin=ameerpet%20maitrivanam&destination=madhapur%20police%20station&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->
   <!--https://maps.googleapis.com/maps/api/directions/json?origin=17.312154,78.131321&destination=17.945217,78.374912&key=AIzaSyC6OSRSBd2DXm6o7YTCQ1zoFK_3H3VgfPk-->
 </resources>

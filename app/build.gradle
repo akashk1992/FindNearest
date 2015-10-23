@@ -62,4 +62,5 @@ dependencies {
     compile 'com.github.ozodrukh:RippleDrawable:2.0.0'
     compile 'com.klinkerapps:sliding-activity:1.1.1'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.github.techery:ProperRatingBar:7f8749b'
 }
