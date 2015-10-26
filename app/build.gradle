@@ -63,4 +63,5 @@ dependencies {
     compile 'com.klinkerapps:sliding-activity:1.1.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.techery:ProperRatingBar:7f8749b'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

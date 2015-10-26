@@ -9,12 +9,16 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.helper.PojoMapping;
+import ask.piyush.findnearest.model.placeDetails.Photo;
 import ask.piyush.findnearest.model.placeDetails.PlaceDetailsResponse;
 import ask.piyush.findnearest.model.placeDetails.Result;
 import ask.piyush.findnearest.model.placeDetails.Review;
@@ -24,6 +28,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.klinker.android.sliding.SlidingActivity;
+import com.squareup.picasso.Picasso;
 import io.techery.properratingbar.ProperRatingBar;
 import org.json.JSONObject;
 
@@ -45,6 +50,7 @@ public class PlaceDetailsPage extends SlidingActivity {
   private TextView criticsRatingTV;
   private TextView phoneNumTV;
   private TextView phoneText;
+  private LinearLayout imagesContainer;
 
   @Override
   public void init(Bundle bundle) {
@@ -54,6 +60,7 @@ public class PlaceDetailsPage extends SlidingActivity {
         getResources().getColor(R.color.app_color_dark)
     );
     setContent(R.layout.place_details_page_activity);
+    disableHeader();
     Intent intent = getIntent();
     expandFromPoints(
         intent.getIntExtra(ARG_EXPANSION_LEFT_OFFSET, 0),
@@ -63,6 +70,12 @@ public class PlaceDetailsPage extends SlidingActivity {
     );
     placeId = intent.getStringExtra("placeId");
     placeName = intent.getStringExtra("placeTitle");
+    getWidgets();
+    webServiceCall();
+  }
+
+  private void getWidgets() {
+    imagesContainer = (LinearLayout) findViewById(R.id.images_container);
     placeTitle = (TextView) findViewById(R.id.place_heading_tv);
     vicinityLandmark = (TextView) findViewById(R.id.landmark_tv);
     userRatingsBar = (ProperRatingBar) findViewById(R.id.user_rating_bar);
@@ -71,7 +84,6 @@ public class PlaceDetailsPage extends SlidingActivity {
     phoneText = (TextView) findViewById(R.id.phone_text);
     criticsRatingTV = (TextView) findViewById(R.id.critics_ratings_tv);
     criticsRatingBar = (ProperRatingBar) findViewById(R.id.rating_bar);
-    webServiceCall();
   }
 
   private void webServiceCall() {
@@ -131,19 +143,27 @@ public class PlaceDetailsPage extends SlidingActivity {
   }
 
   public void populate(Result result) {
+    for (Photo photo : result.getPhotos()) {
+      createImageView(photo.getPhotoReference());
+    }
     placeTitle.setText(placeName);
     Integer critcsReview = 0;
     if (result.getReviews() != null) {
       for (Review review : result.getReviews()) {
         critcsReview += review.getRating();
       }
-      critcsReview = critcsReview / result.getReviews().size();
-      criticsRatingBar.setRating(critcsReview);
+      try {
+        critcsReview = critcsReview / result.getReviews().size();
+        criticsRatingBar.setRating(critcsReview);
+      } catch (ArithmeticException e) {
+        criticsRatingBar.setRating(0);
+      }
     } else {
       criticsRatingBar.setVisibility(View.GONE);
     }
     vicinityLandmark.setText("Near By\n" + result.getVicinity());
-    userRatingsBar.setRating(result.getUserRatingsTotal());
+    if (result.getUserRatingsTotal() != null)
+      userRatingsBar.setRating(result.getUserRatingsTotal());
     if (result.getFormattedPhoneNumber() != null && !result.getFormattedPhoneNumber().isEmpty()) {
       phoneNumTV.setText(result.getFormattedPhoneNumber());
     } else {
@@ -151,5 +171,23 @@ public class PlaceDetailsPage extends SlidingActivity {
       phoneText.setVisibility(View.GONE);
     }
     setTextStyle();
+  }
+
+  private void createImageView(String photoReference) {
+    ImageView imageView = new ImageView(this);
+//    imageView.setImageResource(R.drawable.play);
+    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT);
+    layoutParams.weight = 1;
+    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+    imageView.setAdjustViewBounds(true);
+    imageView.setPadding(2, 0, 2, 0);
+    imageView.setLayoutParams(layoutParams);
+    Picasso.with(context).
+        load(getResources().getString(R.string.webservice_photo_url) + "maxwidth=800&photoreference=" + photoReference + "&key=" + getResources().getString(R.string.maps_web_service_api)).
+        resize(600, 400).
+        into(imageView);
+    imagesContainer.addView(imageView);
   }
 }
