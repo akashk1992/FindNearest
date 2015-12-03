@@ -7,8 +7,8 @@ android {
         applicationId "ask.piyush.findnearest"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 3
-        versionName "1.1"
+        versionCode 5
+        versionName "1.3"
         renderscriptTargetApi 18
         renderscriptSupportModeEnabled true
     }
@@ -64,4 +64,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.techery:ProperRatingBar:7f8749b'
     compile 'com.squareup.picasso:picasso:2.5.2'
+//    compile 'com.instabug.library:instabugsupport:1+'
 }

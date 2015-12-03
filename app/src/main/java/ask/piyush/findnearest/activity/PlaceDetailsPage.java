@@ -51,10 +51,13 @@ public class PlaceDetailsPage extends SlidingActivity {
   private TextView phoneNumTV;
   private TextView phoneText;
   private LinearLayout imagesContainer;
+  private TextView yesButton;
+  public static PlaceDetailsPage slidingActivity;
 
   @Override
   public void init(Bundle bundle) {
     this.context = this;
+    this.slidingActivity = this;
     setPrimaryColors(
         getResources().getColor(R.color.app_color_light),
         getResources().getColor(R.color.app_color_dark)
@@ -84,6 +87,9 @@ public class PlaceDetailsPage extends SlidingActivity {
     phoneText = (TextView) findViewById(R.id.phone_text);
     criticsRatingTV = (TextView) findViewById(R.id.critics_ratings_tv);
     criticsRatingBar = (ProperRatingBar) findViewById(R.id.rating_bar);
+    yesButton = (TextView) findViewById(R.id.yes_button);
+    yesButton.setTag("yes");
+    yesButton.setOnClickListener(MainActivity.mainActivity);
   }
 
   private void webServiceCall() {

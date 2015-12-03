@@ -33,8 +33,6 @@ import ask.piyush.findnearest.model.direction.DirectionResponse;
 import ask.piyush.findnearest.model.direction.Route;
 import ask.piyush.findnearest.model.places.Result;
 import ask.piyush.findnearest.utils.*;
-import codetail.graphics.drawables.DrawableHotspotTouch;
-import codetail.graphics.drawables.LollipopDrawable;
 import codetail.graphics.drawables.LollipopDrawablesCompat;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -57,7 +55,10 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
-import com.orhanobut.dialogplus.*;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.Holder;
+import com.orhanobut.dialogplus.ListHolder;
+import com.orhanobut.dialogplus.OnItemClickListener;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import org.json.JSONObject;
 
@@ -105,12 +106,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private Double destinationLat;
   private Double destinationLng;
   private HashMap<String, String> extraMarkerInfo = new HashMap<>();
+  public static MainActivity mainActivity;
+  private Marker marker;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     context = getApplicationContext();
+    this.mainActivity = this;
     initialSetup();
     setUpFab();
     new LoadingBar(context).showProgressWheel(true, progressWheel, progressWheelLayout);
@@ -155,9 +159,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         .setContentView(iconMainActionBtn)
         .build();
     if (Build.VERSION.SDK_INT >= 16)
-      mainActionButton.setBackground(getRippleDrawable(R.drawable.ripple));
-    mainActionButton.setOnTouchListener(
-        new DrawableHotspotTouch((LollipopDrawable) mainActionButton.getBackground()));
+      mainActionButton.setBackground(getResources().getDrawable(R.drawable.ripple));
     ImageView iconRadius = new ImageView(this); // Create an icon
     iconRadius.setImageDrawable(getResources().getDrawable(R.drawable.radius55));
     ImageView iconTravelMode = new ImageView(this); // Create an icon
@@ -655,6 +657,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
   @Override
   public void onClick(View v) {
+    if (v.getTag().equals("yes")) {
+      LatLng latLng = marker.getPosition();
+      if (polylineList != null) {
+        for (Polyline polyline : polylineList)
+          polyline.remove();
+      }
+      destinationLat = latLng.latitude;
+      destinationLng = latLng.longitude;
+      PlaceDetailsPage.slidingActivity.onBackPressed();
+      webServiceCallForActualPath(destinationLat, destinationLng);
+    }
     if (v.getTag().equals(RADIUS_TAG)) {
       floatingActionMenu.close(true);
       alertDialogRadius = new AlertDiaologNifty();
@@ -734,6 +747,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   @Override
   public void onInfoWindowClick(final Marker marker) {
     floatingActionMenu.close(true);
+    this.marker = marker;
     String placeId = extraMarkerInfo.get(marker.getTitle());
     Intent intent = new Intent(this, PlaceDetailsPage.class);
     intent.putExtra("placeId", placeId);
