@@ -665,7 +665,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
       }
       destinationLat = latLng.latitude;
       destinationLng = latLng.longitude;
-      PlaceDetailsPage.slidingActivity.onBackPressed();
+      PlaceDetailsPage.placeDetailsPage.onBackPressed();
       webServiceCallForActualPath(destinationLat, destinationLng);
     }
     if (v.getTag().equals(RADIUS_TAG)) {

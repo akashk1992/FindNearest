@@ -52,12 +52,12 @@ public class PlaceDetailsPage extends SlidingActivity {
   private TextView phoneText;
   private LinearLayout imagesContainer;
   private TextView yesButton;
-  public static PlaceDetailsPage slidingActivity;
+  public static PlaceDetailsPage placeDetailsPage;
 
   @Override
   public void init(Bundle bundle) {
     this.context = this;
-    this.slidingActivity = this;
+    this.placeDetailsPage = this;
     setPrimaryColors(
         getResources().getColor(R.color.app_color_light),
         getResources().getColor(R.color.app_color_dark)
