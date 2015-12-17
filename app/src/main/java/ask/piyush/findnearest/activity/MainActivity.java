@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private HashMap<String, String> extraMarkerInfo = new HashMap<>();
   public static MainActivity mainActivity;
   private Marker marker;
+  public static ArrayList allPlaces;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -438,8 +439,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             placesResponse = jsonResponse.getResults();
             List<MyItem> clusterItems = new ArrayList();
             ArrayList<Double> distances = new ArrayList();
+            allPlaces = new ArrayList();
             if (!(placesResponse.size() == 0)) {
               for (int index = 0; index < placesResponse.size(); index++) {
+                allPlaces.add(placesResponse.get(index));
                 ask.piyush.findnearest.model.places.Location location1 = placesResponse.get(index).getGeometry().getLocation();
                 lat = location1.getLat();
                 lng = location1.getLng();
@@ -447,6 +450,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 clusterItems.add(new MyItem(lat, lng, mNavIcons[position], placesResponse.get(index)));
                 extraMarkerInfo.put(placesResponse.get(index).getName(), placesResponse.get(index).getPlaceId());
               }
+
+              showAllplacesListActivity();
               ArrayList<Double> distBeforeSort = new ArrayList(distances);
               Collections.sort(distances);
               nearestPlaceIndex = distBeforeSort.indexOf(distances.get(0));
@@ -473,6 +478,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
           }
         });
     VolleySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
+  }
+
+  private void showAllplacesListActivity() {
+    Intent intent = new Intent(this, PlacesListActivity.class);
+    startActivity(addExpansionArgs(intent));
   }
 
   private void createPolylineToNearest(int nearestPlaceIndex, List<Result> placesResponse) {

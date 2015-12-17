@@ -1,0 +1,45 @@
+{
+  "project_info": {
+    "project_id": "rich-honor-93715",
+    "project_number": "112150091108",
+    "name": "BetaFindNearest"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112150091108:android:b208f6b86e6b4afd",
+        "client_id": "android:ask.piyush.findnearest",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "ask.piyush.findnearest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-60688488-1"
+          }
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

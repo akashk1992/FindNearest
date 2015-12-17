@@ -3,6 +3,7 @@ package ask.piyush.findnearest.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import ask.piyush.findnearest.R;
@@ -39,6 +40,7 @@ public class PlacesListActivity extends SlidingActivity {
         intent.getIntExtra(ARG_EXPANSION_VIEW_WIDTH, 0),
         intent.getIntExtra(ARG_EXPANSION_VIEW_HEIGHT, 0)
     );
+    Log.d("test1", "all places: " + MainActivity.allPlaces);
     getWidgets();
   }
 
