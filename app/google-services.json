@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_id": "rich-honor-93715",
-    "project_number": "112150091108",
-    "name": "BetaFindNearest"
+    "project_id": "find-nearest-v3",
+    "project_number": "687117964793",
+    "name": "Find Nearest v3"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:112150091108:android:b208f6b86e6b4afd",
+        "mobilesdk_app_id": "1:687117964793:android:b208f6b86e6b4afd",
         "client_id": "android:ask.piyush.findnearest",
         "client_type": 1,
         "android_client_info": {
@@ -20,7 +20,7 @@
         "analytics_service": {
           "status": 2,
           "analytics_property": {
-            "tracking_id": "UA-60688488-1"
+            "tracking_id": "UA-60688488-2"
           }
         },
         "cloud_messaging_service": {
