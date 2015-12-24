@@ -1,9 +1,12 @@
 package ask.piyush.findnearest.adapter;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
+import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.model.places.Result;
 
 import java.util.ArrayList;
@@ -27,7 +30,7 @@ public class PlacesListAdapter extends BaseAdapter {
 
   @Override
   public Object getItem(int i) {
-    return null;
+    return i;
   }
 
   @Override
@@ -37,6 +40,14 @@ public class PlacesListAdapter extends BaseAdapter {
 
   @Override
   public View getView(int i, View view, ViewGroup viewGroup) {
-    return null;
+    if (view == null) {
+      LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      view = inflater.inflate(R.layout.list_place_item, null);
+    }
+    TextView title = (TextView) view.findViewById(R.id.place_title);
+    TextView address = (TextView) view.findViewById(R.id.place_addrs);
+    title.setText(list.get(i).getName());
+    address.setText(list.get(i).getVicinity());
+    return view;
   }
 }

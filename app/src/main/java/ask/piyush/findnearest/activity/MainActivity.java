@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private HashMap<String, String> extraMarkerInfo = new HashMap<>();
   public static MainActivity mainActivity;
   private Marker marker;
-  public static ArrayList allPlaces;
+  public static ArrayList<Result> allPlaces = new ArrayList();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -439,7 +439,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             placesResponse = jsonResponse.getResults();
             List<MyItem> clusterItems = new ArrayList();
             ArrayList<Double> distances = new ArrayList();
-            allPlaces = new ArrayList();
             if (!(placesResponse.size() == 0)) {
               for (int index = 0; index < placesResponse.size(); index++) {
                 allPlaces.add(placesResponse.get(index));
@@ -450,7 +449,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 clusterItems.add(new MyItem(lat, lng, mNavIcons[position], placesResponse.get(index)));
                 extraMarkerInfo.put(placesResponse.get(index).getName(), placesResponse.get(index).getPlaceId());
               }
-
               showAllplacesListActivity();
               ArrayList<Double> distBeforeSort = new ArrayList(distances);
               Collections.sort(distances);
