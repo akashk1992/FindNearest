@@ -20,6 +20,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   public static MainActivity mainActivity;
   private Marker marker;
   public static ArrayList<Result> allPlaces;
-  private TextView togglePlaces;
+  private ImageView togglePlaces;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -147,8 +148,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
     progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
-    togglePlaces = (TextView) findViewById(R.id.toggle_places);
+    togglePlaces = (ImageView) findViewById(R.id.toggle_places);
     togglePlaces.setOnClickListener(this);
+    setFlashAnim(togglePlaces);
   }
 
   public Drawable getRippleDrawable(int id) {
@@ -728,6 +730,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     } else if (v.getTag().equals("tutorial")) {
       tutorialScreenLayout.setVisibility(View.GONE);
     }
+  }
+
+  private void setFlashAnim(ImageView togglePlaces) {
+    Animation anim = new AlphaAnimation(0.7f, 1.0f);
+    anim.setDuration(1000); //You can manage the time of the blink with this parameter
+    anim.setStartOffset(20);
+    anim.setRepeatMode(Animation.REVERSE);
+    anim.setRepeatCount(Animation.INFINITE);
+    togglePlaces.startAnimation(anim);
   }
 
   private void showOnlyContentDialog(Holder holder, int gravity, BaseAdapter adapter,

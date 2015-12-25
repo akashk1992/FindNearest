@@ -45,17 +45,20 @@
           android:layout_height="120dp"
           wheel:matProg_progressIndeterminate="true"/>
     </LinearLayout>
-    <TextView android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="Open"
-              android:id="@+id/toggle_places"
-              android:padding="12dp"
-              android:visibility="gone"
-              android:background="@color/app_color_dark"
-              android:textColor="@android:color/white"
-              android:gravity="center_horizontal"
-              android:layout_centerHorizontal="true"
-              android:layout_alignParentBottom="true"/>
+    <ImageView android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/toggle_places"
+               android:paddingTop="6dp"
+               android:paddingBottom="6dp"
+               android:paddingLeft="24dp"
+               android:paddingRight="24dp"
+               android:visibility="gone"
+               android:src="@drawable/ic_arrow2"
+               android:background="@color/app_color_dark"
+               android:textColor="@android:color/white"
+               android:gravity="center_horizontal"
+               android:layout_centerHorizontal="true"
+               android:layout_alignParentBottom="true"/>
   </RelativeLayout>
   <ListView
       android:layout_width="250dp"
