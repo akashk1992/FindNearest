@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import ask.piyush.findnearest.R;
 import ask.piyush.findnearest.model.places.Result;
 import com.klinker.android.sliding.SlidingActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -53,8 +55,12 @@ public class PlacesListActivity extends SlidingActivity {
       View view = inflater.inflate(R.layout.list_place_item, null);
       TextView title = (TextView) view.findViewById(R.id.place_title);
       TextView address = (TextView) view.findViewById(R.id.place_addrs);
+      ImageView icon = (ImageView) view.findViewById(R.id.place_icon);
       title.setText(result.getName());
       address.setText(result.getVicinity());
+      Picasso.with(context).
+          load(result.getIcon()).
+          into(icon);
       container.addView(view);
     }
   }

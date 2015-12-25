@@ -5,10 +5,6 @@
                                         android:layout_height="match_parent"
                                         android:id="@+id/drawer_layout">
 
-  <!--<FrameLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:id="@+id/fragment_container"></FrameLayout>-->
   <View
       android:layout_height="100dp"
       android:layout_width="match_parent"
@@ -20,36 +16,47 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:name="com.google.android.gms.maps.SupportMapFragment"/>
-
-  <FrameLayout
-      android:id="@+id/tutorial_screen_layout"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="gone"
-      android:alpha="0.6">
-
-    <ImageView
-        android:id="@+id/tutorial_image"
+  <RelativeLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent">
+    <FrameLayout
+        android:id="@+id/tutorial_screen_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-  </FrameLayout>
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:alpha="0.6">
 
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:id="@+id/progress_wheel_layout"
-      android:background="@android:color/black"
-      android:alpha="0"
-      android:gravity="center">
+      <ImageView
+          android:id="@+id/tutorial_image"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"/>
+    </FrameLayout>
 
-    <com.pnikosis.materialishprogress.ProgressWheel
-        android:id="@+id/progress_wheel"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        wheel:matProg_progressIndeterminate="true"/>
-  </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_wheel_layout"
+        android:background="@android:color/black"
+        android:alpha="0"
+        android:gravity="center">
 
-
+      <com.pnikosis.materialishprogress.ProgressWheel
+          android:id="@+id/progress_wheel"
+          android:layout_width="120dp"
+          android:layout_height="120dp"
+          wheel:matProg_progressIndeterminate="true"/>
+    </LinearLayout>
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Open"
+              android:id="@+id/toggle_places"
+              android:padding="12dp"
+              android:visibility="gone"
+              android:background="@color/app_color_dark"
+              android:textColor="@android:color/white"
+              android:gravity="center_horizontal"
+              android:layout_centerHorizontal="true"
+              android:layout_alignParentBottom="true"/>
+  </RelativeLayout>
   <ListView
       android:layout_width="250dp"
       android:layout_height="match_parent"

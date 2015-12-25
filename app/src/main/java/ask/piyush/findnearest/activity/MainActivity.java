@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private HashMap<String, String> extraMarkerInfo = new HashMap<>();
   public static MainActivity mainActivity;
   private Marker marker;
-  public static ArrayList<Result> allPlaces = new ArrayList();
+  public static ArrayList<Result> allPlaces;
+  private TextView togglePlaces;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
     progressWheelLayout = (LinearLayout) findViewById(R.id.progress_wheel_layout);
+    togglePlaces = (TextView) findViewById(R.id.toggle_places);
+    togglePlaces.setOnClickListener(this);
   }
 
   public Drawable getRippleDrawable(int id) {
@@ -439,7 +442,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             placesResponse = jsonResponse.getResults();
             List<MyItem> clusterItems = new ArrayList();
             ArrayList<Double> distances = new ArrayList();
-            if (!(placesResponse.size() == 0)) {
+            allPlaces = new ArrayList<>();
+            if (placesResponse.size() != 0) {
+              togglePlaces.setVisibility(View.VISIBLE);
               for (int index = 0; index < placesResponse.size(); index++) {
                 allPlaces.add(placesResponse.get(index));
                 ask.piyush.findnearest.model.places.Location location1 = placesResponse.get(index).getGeometry().getLocation();
@@ -460,6 +465,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
               distances = null;
               createPolylineToNearest(nearestPlaceIndex, placesResponse);
             } else {
+              togglePlaces.setVisibility(View.GONE);
               placesResponse = null;
               new CustomToast(context).makeText(getString(R.string.no_result_found));
             }
@@ -471,6 +477,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
           @Override
           public void onErrorResponse(VolleyError error) {
             // hide the progress dialog
+            togglePlaces.setVisibility(View.VISIBLE);
             new CustomToast(context).makeText(getString(R.string.something_went_wrong));
             new LoadingBar(context).showProgressWheel(false, progressWheel, progressWheelLayout);
           }
@@ -665,7 +672,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
   @Override
   public void onClick(View v) {
-    if (v.getTag().equals("yes")) {
+    if (v.getId() == R.id.toggle_places) {
+      showAllplacesListActivity();
+    } else if (v.getTag().equals("yes")) {
       LatLng latLng = marker.getPosition();
       if (polylineList != null) {
         for (Polyline polyline : polylineList)
@@ -675,8 +684,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
       destinationLng = latLng.longitude;
       PlaceDetailsPage.placeDetailsPage.onBackPressed();
       webServiceCallForActualPath(destinationLat, destinationLng);
-    }
-    if (v.getTag().equals(RADIUS_TAG)) {
+    } else if (v.getTag().equals(RADIUS_TAG)) {
       floatingActionMenu.close(true);
       alertDialogRadius = new AlertDiaologNifty();
       alertDialogRadius.materialDialogForRadius(this, "");
