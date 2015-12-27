@@ -503,8 +503,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     webServiceCallForActualPath(destinationLat, destinationLng);
   }
 
-  private void webServiceCallForActualPath(double destinationLat, double destinationLng) {
-    Log.d("mode", "mode: " + mode);
+  public void webServiceCallForActualPath(double destinationLat, double destinationLng) {
+    if (polylineList != null) {
+      for (Polyline polyline : polylineList)
+        polyline.remove();
+    }
     String path = "https://maps.googleapis.com/maps/api/directions/json?" +
         "origin=" + currentLatitude + "," + currentLongitude +
         "&destination=" + destinationLat + "," + destinationLng +
@@ -522,7 +525,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (status.equalsIgnoreCase("OK")) {
               String overview_polyline = routes.get(0).getOverviewPolyline().getPoints();
               String distance = routes.get(0).getLegs().get(0).getDistance().getText();
-              Log.d("test", "dist: " + distance);
               direction(overview_polyline);
             } else if (status.equalsIgnoreCase("ZERO_RESULTS")) {
               new CustomToast(context).makeText(getString(R.string.zero_result_found));
@@ -534,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         new Response.ErrorListener() {
           @Override
           public void onErrorResponse(VolleyError error) {
-            Log.d("test", "Something Went Wrong While getting Directions");
+            new CustomToast(context).makeText("Something Went Wrong While getting Directions");
           }
         });
     VolleySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
@@ -546,16 +548,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     if (mode.equalsIgnoreCase("Driving"))
       polylineColor = getResources().getColor(R.color.app_color);
     else polylineColor = getResources().getColor(R.color.orange);
-    Polyline polyline = mMap.addPolyline(new PolylineOptions().color(polylineColor).geodesic(true).addAll(decodedPath));
-
-    /*CameraPosition cameraPosition = new CameraPosition.Builder()
-        .target(new LatLng(currentLatitude, currentLongitude))
-        .bearing(45)
-        .zoom(16.0f)
-        .tilt(85).build();*/
-//    LatLngBounds bounds = new LatLngBounds(
-//        new LatLng(destinationLat, destinationLng), new LatLng(currentLatitude, currentLongitude));
-
+    Polyline polyline = mMap.addPolyline(new PolylineOptions().color(polylineColor).width(5).geodesic(true).addAll(decodedPath));
     CameraPosition cameraPosition = new CameraPosition.Builder()
         .target(new LatLng(currentLatitude, currentLongitude))
         .zoom(14.0f)
@@ -567,7 +560,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         .strokeWidth(5)
         .fillColor(0x5066c0b7));
     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
     polylineList.add(polyline);
   }
 
@@ -674,14 +666,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
   @Override
   public void onClick(View v) {
-    if (v.getId() == R.id.toggle_places) {
+    if (v.getTag() instanceof Result) {
+      Result result = (Result) v.getTag();
+      destinationLat = result.getGeometry().getLocation().getLat();
+      destinationLng = result.getGeometry().getLocation().getLng();
+      PlacesListActivity.placesListActivity.onBackPressed();
+      webServiceCallForActualPath(destinationLat, destinationLng);
+    } else if (v.getId() == R.id.toggle_places) {
       showAllplacesListActivity();
     } else if (v.getTag().equals("yes")) {
       LatLng latLng = marker.getPosition();
-      if (polylineList != null) {
-        for (Polyline polyline : polylineList)
-          polyline.remove();
-      }
       destinationLat = latLng.latitude;
       destinationLng = latLng.longitude;
       PlaceDetailsPage.placeDetailsPage.onBackPressed();

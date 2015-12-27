@@ -26,10 +26,12 @@ public class PlacesListActivity extends SlidingActivity {
   private Context context;
   private ArrayList<Result> placesList;
   private LinearLayout container;
+  public static PlacesListActivity placesListActivity;
 
   @Override
   public void init(Bundle bundle) {
     this.context = this;
+    placesListActivity = this;
     setPrimaryColors(
         getResources().getColor(R.color.app_color_light),
         getResources().getColor(R.color.app_color_dark)
@@ -53,15 +55,18 @@ public class PlacesListActivity extends SlidingActivity {
     LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     for (Result result : placesList) {
       View view = inflater.inflate(R.layout.list_place_item, null);
+      view.setOnClickListener(MainActivity.mainActivity);
       TextView title = (TextView) view.findViewById(R.id.place_title);
       TextView address = (TextView) view.findViewById(R.id.place_addrs);
       ImageView icon = (ImageView) view.findViewById(R.id.place_icon);
       title.setText(result.getName());
       address.setText(result.getVicinity());
       Picasso.with(context).
-          load(result.getIcon()).
+          load(result.getIcon())
+          .resize(55, 55).
           into(icon);
       container.addView(view);
+      view.setTag(result);
     }
   }
 }

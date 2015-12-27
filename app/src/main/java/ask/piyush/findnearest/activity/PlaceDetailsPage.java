@@ -32,7 +32,7 @@ import com.squareup.picasso.Picasso;
 import io.techery.properratingbar.ProperRatingBar;
 import org.json.JSONObject;
 
-public class PlaceDetailsPage extends SlidingActivity {
+public class PlaceDetailsPage extends SlidingActivity implements View.OnClickListener {
   final String ARG_USE_EXPANSION = "arg_use_expansion";
   final String ARG_EXPANSION_LEFT_OFFSET = "arg_left_offset";
   final String ARG_EXPANSION_TOP_OFFSET = "arg_top_offset";
@@ -90,6 +90,7 @@ public class PlaceDetailsPage extends SlidingActivity {
     yesButton = (TextView) findViewById(R.id.yes_button);
     yesButton.setTag("yes");
     yesButton.setOnClickListener(MainActivity.mainActivity);
+    phoneNumTV.setOnClickListener(this);
   }
 
   private void webServiceCall() {
@@ -127,7 +128,7 @@ public class PlaceDetailsPage extends SlidingActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  public void dialNumber(View view) {
+  public void dialNumber() {
     Uri number = Uri.parse("tel:" + placeDetailsResponse.getResult().getFormattedPhoneNumber());
     Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
     startActivity(callIntent);
@@ -195,5 +196,14 @@ public class PlaceDetailsPage extends SlidingActivity {
         resize(600, 400).
         into(imageView);
     imagesContainer.addView(imageView);
+  }
+
+  @Override
+  public void onClick(View view) {
+    switch (view.getId()) {
+      case R.id.phone_number_tv:
+        dialNumber();
+        break;
+    }
   }
 }
