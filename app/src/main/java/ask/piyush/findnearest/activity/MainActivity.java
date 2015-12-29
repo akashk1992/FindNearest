@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -265,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   }
 
   private void setUpNavigationDrawer() {
+    drawerLayout.setScrimColor(Color.parseColor("#40009688"));
     mActivityTitle = getTitle().toString();
     actionBar = getSupportActionBar();
     mDrawerList = (ListView) findViewById(R.id.nav_drawer_list);

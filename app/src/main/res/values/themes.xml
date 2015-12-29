@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>  <!-- the theme applied to the application or activity -->
-    <style name="CustomActionBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:background">#BE29EC</item>
-    </style>
+  <style name="CustomActionBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <item name="android:background">#BE29EC</item>
+  </style>
+  <style name="Theme.Sliding.WithAlpha" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowFrame">@null</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowAnimationStyle">@null</item>
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="content_background">@android:color/transparent</item>
+    <!--<item name="popup_theme">@style/ThemeOverlay.AppCompat.Light</item>-->
+  </style>
 </resources>

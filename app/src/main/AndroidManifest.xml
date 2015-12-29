@@ -61,7 +61,7 @@
         android:name=".activity.PlacesListActivity"
         android:excludeFromRecents="true"
         android:taskAffinity=""
-        android:theme="@style/Theme.Sliding.Light">
+        android:theme="@style/Theme.Sliding.WithAlpha">
     </activity>
 
     <!-- Setting For SugarApp -->
