@@ -479,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
           @Override
           public void onErrorResponse(VolleyError error) {
             // hide the progress dialog
-            togglePlaces.setVisibility(View.VISIBLE);
+            togglePlaces.setVisibility(View.GONE);
             new CustomToast(context).makeText(getString(R.string.something_went_wrong));
             new LoadingBar(context).showProgressWheel(false, progressWheel, progressWheelLayout);
           }
